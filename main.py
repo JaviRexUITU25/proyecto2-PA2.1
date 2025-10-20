@@ -2,8 +2,7 @@ print("INTERFACES GENERALES")
 import tkinter as tk
 from tkinter import messagebox, ttk
 from PIL import ImageTk, Image
-import io
-import base64
+#CLASE UNICA
 class GymApp:
     def __init__(self):
         self.window = tk.Tk()
@@ -21,6 +20,7 @@ class GymApp:
         img = Image.new("RGB", (ancho, alto), color)
         return ImageTk.PhotoImage(img)
 
+#VENTANA
     def mostrar_login(self):
         for widget in self.window.winfo_children():
             widget.destroy()
@@ -60,6 +60,7 @@ class GymApp:
             fg="#000000"
         ).pack(pady=(0, 40))
 
+#etiqueta para agregar tu nombre
         tk.Label(
             left_frame,
             text="Nombre completo",
@@ -79,9 +80,10 @@ class GymApp:
         )
         self.nombre.pack(fill=tk.X, ipady=10, pady=(0, 20))
 
+#etiqueta para agregar tu numero celular
         tk.Label(
             left_frame,
-            text="Numero de celular",
+            text="Numero de celular (deben ser 8 dígitos)",
             font=("Helvetica", 12),
             bg="#d9b59c",
             fg="#000000"
@@ -109,6 +111,7 @@ class GymApp:
         )
         boton_ingreso.pack(fill=tk.X, ipady=12)
 
+#El color de fondo cuando el usuario pasa el cursor
         def enter(e):
             boton_ingreso.config(bg="#d9b59c")
 
@@ -145,6 +148,8 @@ class GymApp:
         encabezado.pack(fill=tk.X)
         encabezado.pack_propagate(False)
 
+#bg= color del fondo
+#fg= color de la letra
         tk.Label(
             encabezado,
             text="DAC PILATES",
