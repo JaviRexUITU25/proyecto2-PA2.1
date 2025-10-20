@@ -4,8 +4,6 @@ from tkinter import messagebox, ttk
 from PIL import ImageTk, Image
 import io
 import base64
-
-
 class GymApp:
     def __init__(self):
         self.window = tk.Tk()
@@ -37,6 +35,14 @@ class GymApp:
 
         right_frame = tk.Frame(main_frame, bg="#d9b59c")
         right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+        try:
+            imagen_empresa = Image.open("Dac logo png.png")
+            imagen_empresa = imagen_empresa.resize((400,400))
+            self.foto_empresa = ImageTk.PhotoImage(imagen_empresa)
+            label_imagen = tk.Label(right_frame, image=self.foto_empresa, bg="#d9b59c")
+            label_imagen.pack(expand=True)
+        except:
+            pass
 
         tk.Label(
             left_frame,
@@ -153,6 +159,16 @@ class GymApp:
             font=("Helvetica", 14),
             bg="#d9b59c",
         ).pack(side=tk.RIGHT, padx=30)
+
+        try:
+            imagen_logo = Image.open("Dac logo png.png")
+            imagen_logo =imagen_logo.resize((80,80))
+            self.logo= ImageTk.PhotoImage(imagen_logo)
+
+            label_logo = tk.Label(encabezado, image=self.logo, bg="#d9b59c")
+            label_logo.pack(side=tk.LEFT, padx=20)
+        except:
+            pass
 
         content_frame = tk.Frame(main_frame, bg="#d9b59c")
         content_frame.pack(fill=tk.BOTH, expand=True, padx=50, pady=40)
