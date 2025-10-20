@@ -153,6 +153,107 @@ class GymApp:
             bg="#B77D55",
         ).pack(side=tk.RIGHT,padx=30)
 
+        content_frame = tk.Frame(main_frame, bg="#d9b59c")
+        content_frame.pack(fill=tk.BOTH, expand=True, padx=50, pady=40)
+
+        tk.Label(
+            content_frame,
+            text= "Clases de pilates",
+            font=("Helvetica", 29,"bold"),
+            bg="#B77D55",
+            fg="#000000"
+        ).pack(pady=(0,30))
+
+        frame_boton = tk.Frame(content_frame, bg="#d9b59c")
+        frame_boton.pack(expand=True)
+
+        self.crear_boton(
+            frame_boton,
+            "VER HORARIOS",
+            "#00d4ff",
+            "#00a8cc",
+            self.mostrar_horarios
+        ).pack(pady=15, iádx=40, ipady=20)
+
+        self.crear_boton(
+            frame_boton,
+            "UNIRSE A UNA CLASE",
+            "#00d4ff",
+            "#00a8cc",
+            self.uniser_clase
+        ).pack(pady=15, ipadx=40, ipady=20)
+
+        self.crear_boton(
+            frame_boton,
+            "QUITAR REGISTRO"
+            "#00d4ff",
+            "#00a8cc",
+            self.quitar_registro
+        ).pack(pady=15, ipadx=40, ipady=20)
+
+        boton_salir = tk.Button(
+            content_frame,
+            text= "Cerrar Sesión",
+            font= ("Helvetica", 10),
+            bg="#B77D55",
+            fg="#000000",
+            activebackground="#00d4ff",
+            activeforeground="#B77D55",
+            relief= tk.FLAT,
+            cursor= "hand2",
+            command=self.mostrar_login
+        )
+        boton_salir.pack(side=tk.BOTTOM, ipady=20)
+    def crear_boton(self,parent, texto, color, color_hover, comando):
+        boton = tk.Button(
+            parent,
+            text=texto,
+            font=("Helvetica", 16, "bold"),
+            bg=color,
+            fg="#000000",
+            activebackground=color_hover,
+            activeforeground="#000000",
+            relief=tk.FLAT,
+            cursor= "hand2",
+            command=comando
+            width=25
+        )
+
+        def enter(e):
+            boton.config(bg=color_hover)
+
+        def leave(e):
+            boton.config(bg=color)
+
+        boton.bind("<Enter>", enter)
+        boton.bind("<Leave>", leave)
+        return boton
+
+    def mostrar_horarios(self):
+        horarios = """
+        Lunes, Martes, Jueves y Viernes
+        9:00 am - 10:00 am
+        10:20 am - 11:20 am
+        6:00 pm - 7:00 pm
+        8:00 pm - 9:00 pm
+        
+        Miercoles
+        9:00 am - 10:00 am
+        6:00 pm - 7:00 pm
+        8:00 pm - 9:00 pm
+        
+        Martes, Miercoles y Jueves
+        6:00 am - 7:00 am
+        """
+        messagebox.showinfo("Horarios de Pilates", horarios)
+
+    def uniser_clase(self):
+        ventana = tk.Toplevel(self.window)
+        ventana.little("Unirse a Clase")
+        ventana.geometry("400x300")
+        ventana.configure(bg="#B77D55")
+
+
     def run(self):
         self.window.mainloop()
 
