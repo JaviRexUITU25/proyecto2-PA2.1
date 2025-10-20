@@ -215,7 +215,7 @@ class GymApp:
             activeforeground="#000000",
             relief=tk.FLAT,
             cursor= "hand2",
-            command=comando
+            command=comando,
             width=25
         )
 
@@ -252,6 +252,41 @@ class GymApp:
         ventana.little("Unirse a Clase")
         ventana.geometry("400x300")
         ventana.configure(bg="#B77D55")
+
+        tk.Label(
+            ventana,
+            text="Selecciona un horario",
+            font=("Helvetica", 16, "bold"),
+            bg="#B77D55",
+            fg="#000000"
+        ).pack(pady=20)
+
+        horarios = [
+            "Lunes 9:00 am - 10:00 am",
+            "Lunes 10:20 am - 11:20 am",
+            "Lunes 6:00 pm - 7:00 pm",
+            "Lunes 8:00 pm - 9:00 pm",
+            "Martes 9:00 am - 10:00 am"
+            "Martes 10:20 am - 11:20 am"
+            "Martes 6:00 pm - 7:00 pm"
+            "Martes 8:00 pm - 9:00 pm",
+            "Jueves 9:00 am - 10:00 am"
+            "Jueves 10:20 am - 11:20 am"
+            "Jueves 6:00 pm - 7:00 pm"
+            "Jueves 8:00 pm - 9:00 pm",
+            "Viernes 9:00 am - 10:00 am"
+            "Viernes 10:20 am - 11:20 am"
+            "Viernes 6:00 pm - 7:00 pm"
+            "Viernes 8:00 pm - 9:00 pm"
+            "Miercoles 9:00 am - 10:00 am"
+            "Miercoles 6:00 pm - 7:00 pm"
+            "Miercoles 8:00 pm - 9:00 pm"
+            "Martes 6:00 am - 7:00 am"
+            "Miercoles 6:00 am - 7:00 am"
+            "Jueves 6:00 am - 7:00 am",
+        ]
+        combo = ttk.Combobox(ventana, values=horarios, font=("Helvetica", 12), width=20)
+        combo.pack(pady=20)
 
 
     def run(self):
