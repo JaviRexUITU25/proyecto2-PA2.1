@@ -1,1 +1,1 @@
-print("Base de datos")
+print("Base de datoss")
