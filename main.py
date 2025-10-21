@@ -97,7 +97,22 @@ class GymApp:
         )
         self.celular.pack(fill=tk.X, ipady=10, pady=(0, 40))
 
-        boton_ingreso = tk.Button(
+        boton_ingresoINS = tk.Button(
+            left_frame,
+            text= "Ingresar como instructor",
+            font=("Helvetica", 14, "bold"),
+            bg="#d9b59c",
+            fg="#000000",
+            activebackground="#d9b59c",
+            activeforeground="#B77D55",
+            relief=tk.FLAT,
+            cursor="hand2",
+            command=self.validar_login
+        )
+        boton_ingresoINS.pack(fill=tk.X, ipady=12)
+
+
+        boton_ingresoUS = tk.Button(
             left_frame,
             text="Ingresar",
             font=("Helvetica", 14, "bold"),
@@ -109,7 +124,7 @@ class GymApp:
             cursor="hand2",
             command=self.validar_login
         )
-        boton_ingreso.pack(fill=tk.X, ipady=12)
+        boton_ingresoUS.pack(fill=tk.X, ipady=12)
 
 #El color de fondo cuando el usuario pasa el cursor
         def enter(e):
@@ -128,7 +143,7 @@ class GymApp:
         if not nombre or not celular:
             messagebox.showerror("Error", "Completa todos los campos")
             return
-        if not celular.isdigit() or len(celular) < 8:
+        if not celular.isdigit() or len(celular) < 8 or len(celular) >8:
             messagebox.showerror("Error", "Debe ingresar 8 digitos")
             return
 
