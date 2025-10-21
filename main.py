@@ -133,8 +133,10 @@ class GymApp:
         def leave(e):
             boton_ingreso.config(bg="#d9b59c")
 
-        boton_ingreso.bind("<Enter>", enter)
-        boton_ingreso.bind("<Leave>", leave)
+        boton_ingresoUS.bind("<Enter>", enter)
+        boton_ingresoUS.bind("<Leave>", leave)
+        boton_ingresoINS.bind("<Enter>", enter)
+        boton_ingresoINS.bind("<Leave>", leave)
 
     def validar_login(self):
         nombre = self.nombre.get().strip()
