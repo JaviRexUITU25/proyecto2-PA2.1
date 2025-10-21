@@ -5,7 +5,7 @@ class Usuario:
         self.nombre= nombre
         self.telefono = telefono
         self.tipo  = tipo
-    def _conn():
+    def _conn(self):
         conn = sqlite3.connect(DB_NAME)
         conn.row_factory= sqlite3.Row
         conn.execute("""
@@ -17,6 +17,13 @@ class Usuario:
         """)
         conn.commit()
         return conn
+    def guardar(self):
+        with self._conn() as conn:
+            conn.execute(
+                "INSERT INTO usuarios (nombre, telefono) VALUES (?,?,?)",
+                (self.nombre,self.telefono)
+            )
+        print(f"Usuario: {self.nombre} registrado con éxito")
     
 
 
