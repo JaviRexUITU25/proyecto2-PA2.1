@@ -591,3 +591,106 @@ def ver_mis_clases(nombre_cliente):
     tk.Button(ventana, text="Cerrar", command=ventana.destroy,
               bg="#9C27B0", fg="white", font=("Helvetica", 10),
               width=15).pack(pady=10)
+
+#Ventana de registro
+def ventana_registrarse():
+    ventana = tk.Toplevel(window)
+    ventana.title("Registrarse")
+    ventana.geometry("400x300")
+    ventana.resizable(False, False)
+    ventana.transient(window)
+    ventana.grab_set()
+
+    tk.Label(ventana, text="Registro de Cliente",
+             font=("Helvetica", 14, "bold")).pack(pady=20)
+
+    tk.Label(ventana, text="Nombre completo:").pack(pady=5)
+    entrada_nombre = tk.Entry(ventana, width=35)
+    entrada_nombre.pack(pady=5)
+
+    tk.Label(ventana, text="Número de celular:").pack(pady=5)
+    entrada_celular = tk.Entry(ventana, width=35)
+    entrada_celular.pack(pady=5)
+
+    def guardar_cliente():
+        nombre = entrada_nombre.get().strip()
+        celular = entrada_celular.get().strip()
+
+        if not nombre or not celular:
+            messagebox.showwarning("Advertencia", "Completa todos los campos")
+            return
+
+        # Verificar si ya existe
+        for cliente in CLIENTES_REGISTRADOS:
+            if cliente['nombre'] == nombre or cliente['celular'] == celular:
+                messagebox.showerror("Error", "Este cliente ya está registrado")
+                return
+
+        CLIENTES_REGISTRADOS.append({'nombre': nombre, 'celular': celular})
+        messagebox.showinfo("Éxito", f"¡Cliente {nombre} registrado exitosamente!\nAhora puedes iniciar sesión.")
+        ventana.destroy()
+
+    tk.Button(ventana, text="Registrar", command=guardar_cliente,
+              bg="#4CAF50", fg="white", font=("Helvetica", 11, "bold"),
+              width=15, height=2).pack(pady=20)
+
+    tk.Button(ventana, text="Cancelar", command=ventana.destroy,
+              bg="#f44336", fg="white", font=("Helvetica", 10),
+              width=15).pack()
+
+
+# Ventana principal
+window = tk.Tk()
+window.title("DAC PILATES")
+window.geometry("750x400")
+window.resizable(False, False)
+
+frame_principal = tk.Frame(window)
+frame_principal.pack(fill=tk.BOTH, expand=True)
+
+frame_izquierdo = tk.Frame(frame_principal, width=400)
+frame_izquierdo.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20)
+
+tk.Label(frame_izquierdo, text="Bienvenido a la gestión de DAC",
+         font=("Helvetica", 18, "bold")).pack(pady=40)
+
+tk.Label(frame_izquierdo, text="Selecciona una opción:",
+         font=("Helvetica", 12)).pack(pady=20)
+
+frame_botones = tk.Frame(frame_izquierdo)
+frame_botones.pack(pady=30)
+
+btn_login = tk.Button(frame_botones, text="Iniciar Sesión",
+                      command=ventana_iniciar_sesion,
+                      bg="#2196F3", fg="white",
+                      font=("Helvetica", 12, "bold"),
+                      width=15, height=2)
+btn_login.pack(pady=10)
+
+btn_registro = tk.Button(frame_botones, text="Registrarse",
+                         command=ventana_registrarse,
+                         bg="#4CAF50", fg="white",
+                         font=("Helvetica", 12, "bold"),
+                         width=15, height=2)
+btn_registro.pack(pady=10)
+
+frame_derecho = tk.Frame(frame_principal, width=350, bg="#f0f0f0")
+frame_derecho.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
+try:
+    from PIL import Image, ImageTk
+
+    imagen = Image.open('Dac logo png.png')
+    imagen = imagen.resize((330, 380), Image.Resampling.LANCZOS)
+    photo = ImageTk.PhotoImage(imagen)
+
+    label_imagen = tk.Label(frame_derecho, image=photo, bg="#f0f0f0")
+    label_imagen.image = photo
+    label_imagen.pack(pady=10)
+except Exception as e:
+    tk.Label(frame_derecho, text="\n\nDAC\n\nPILATES",
+             font=("Helvetica", 36, "bold"),
+             bg="#f0f0f0",
+             fg="#2196F3").pack(expand=True)
+
+window.mainloop()
