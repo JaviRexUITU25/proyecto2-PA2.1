@@ -214,3 +214,106 @@ def agregar_clase():
     tk.Button(ventana, text="Cancelar", command=ventana.destroy,
               bg="#f44336", fg="white", font=("Helvetica", 10),
               width=15).pack()
+
+
+def quitar_clase():
+    if not CLASES:
+        messagebox.showinfo("No hay clases registradas")
+        return
+
+    ventana = tk.Toplevel(window)
+    ventana.title("Quitar Clase")
+    ventana.geometry("500x400")
+    ventana.resizable(False, False)
+    ventana.grab_set()
+
+    tk.Label(ventana, text="Selecciona la clase a eliminar",
+             font=("Helvetica", 14, "bold")).pack(pady=15)
+
+    frame_lista = tk.Frame(ventana)
+    frame_lista.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
+
+    scrollbar = tk.Scrollbar(frame_lista)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    lista = tk.Listbox(frame_lista, yscrollcommand=scrollbar.set,
+                       font=("Helvetica", 10), height=10)
+    lista.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar.config(command=lista.yview)
+
+    for clase in CLASES:
+        texto = f"ID:{clase['id']} - {clase['nombre']} | {clase['dia']} {clase['hora']} | Inscritos: {clase['inscritos']}/{clase['cupo_maximo']}"
+        lista.insert(tk.END, texto)
+
+    def eliminar_seleccionada():
+        seleccion = lista.curselection()
+        if not seleccion:
+            messagebox.showwarning("Selecciona una clase")
+            return
+
+        indice = seleccion[0]
+        clase = CLASES[indice]
+
+        respuesta = messagebox.askyesno("Confirmar",
+                                        f"¿Eliminar la clase '{clase['nombre']}'?\n"
+                                        f"Hay {clase['inscritos']} alumno(s) inscrito(s).")
+        if respuesta:
+            # Remover inscripciones de clientes
+            for cliente_nombre in list(INSCRIPCIONES.keys()):
+                if clase['id'] in INSCRIPCIONES[cliente_nombre]:
+                    INSCRIPCIONES[cliente_nombre].remove(clase['id'])
+
+            CLASES.pop(indice)
+            messagebox.showinfo("Clase eliminada exitosamente")
+            ventana.destroy()
+
+    tk.Button(ventana, text="Eliminar Clase", command=eliminar_seleccionada,
+              bg="#f44336", fg="white", font=("Helvetica", 11, "bold"),
+              width=15, height=2).pack(pady=10)
+
+    tk.Button(ventana, text="Cancelar", command=ventana.destroy,
+              bg="#9E9E9E", fg="white", font=("Helvetica", 10),
+              width=15).pack()
+
+
+def ver_clases_instructor():
+    if not CLASES:
+        messagebox.showinfo("Información", "No hay clases registradas")
+        return
+
+    ventana = tk.Toplevel(window)
+    ventana.title("Todas las Clases")
+    ventana.geometry("600x450")
+    ventana.resizable(False, False)
+    ventana.grab_set()
+
+    tk.Label(ventana, text="Lista de Clases Registradas",
+             font=("Helvetica", 14, "bold")).pack(pady=15)
+
+    frame_tabla = tk.Frame(ventana)
+    frame_tabla.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
+
+    scrollbar = tk.Scrollbar(frame_tabla)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    texto = tk.Text(frame_tabla, yscrollcommand=scrollbar.set,
+                    font=("Courier", 10), height=15, width=70)
+    texto.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar.config(command=texto.yview)
+
+    for clase in CLASES:
+        info = f"{'=' * 60}\n"
+        info += f"ID: {clase['id']}\n"
+        info += f"Nombre: {clase['nombre']}\n"
+        info += f"Día: {clase['dia']} | Hora: {clase['hora']}\n"
+        info += f"Inscritos: {clase['inscritos']}/{clase['cupo_maximo']}\n"
+        if clase['alumnos']:
+            info += f"Alumnos: {', '.join(clase['alumnos'])}\n"
+        info += f"{'=' * 60}\n\n"
+        texto.insert(tk.END, info)
+
+    texto.config(state=tk.DISABLED)
+
+    tk.Button(ventana, text="Cerrar", command=ventana.destroy,
+              bg="#2196F3", fg="white", font=("Helvetica", 10),
+              width=15).pack(pady=10)
