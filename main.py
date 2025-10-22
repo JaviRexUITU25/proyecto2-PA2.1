@@ -549,3 +549,45 @@ def salirse_clase(nombre_cliente):
     tk.Button(ventana, text="Cancelar", command=ventana.destroy,
               bg="#9E9E9E", fg="white", font=("Helvetica", 10),
               width=15).pack()
+
+
+def ver_mis_clases(nombre_cliente):
+    if nombre_cliente not in INSCRIPCIONES or not INSCRIPCIONES[nombre_cliente]:
+        messagebox.showinfo("Información", "No estás inscrito en ninguna clase")
+        return
+
+    mis_clases = [c for c in CLASES if c['id'] in INSCRIPCIONES[nombre_cliente]]
+
+    ventana = tk.Toplevel(window)
+    ventana.title("Mis Clases")
+    ventana.geometry("550x400")
+    ventana.resizable(False, False)
+    ventana.grab_set()
+
+    tk.Label(ventana, text="Mis Clases Inscritas",
+             font=("Helvetica", 14, "bold")).pack(pady=15)
+
+    frame_tabla = tk.Frame(ventana)
+    frame_tabla.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
+
+    scrollbar = tk.Scrollbar(frame_tabla)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    texto = tk.Text(frame_tabla, yscrollcommand=scrollbar.set,
+                    font=("Courier", 10), height=12, width=60)
+    texto.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar.config(command=texto.yview)
+
+    for clase in mis_clases:
+        info = f"{'=' * 50}\n"
+        info += f"Clase: {clase['nombre']}\n"
+        info += f"Día: {clase['dia']}\n"
+        info += f"Hora: {clase['hora']}\n"
+        info += f"{'=' * 50}\n\n"
+        texto.insert(tk.END, info)
+
+    texto.config(state=tk.DISABLED)
+
+    tk.Button(ventana, text="Cerrar", command=ventana.destroy,
+              bg="#9C27B0", fg="white", font=("Helvetica", 10),
+              width=15).pack(pady=10)
