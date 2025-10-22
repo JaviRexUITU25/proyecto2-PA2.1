@@ -317,3 +317,100 @@ def ver_clases_instructor():
     tk.Button(ventana, text="Cerrar", command=ventana.destroy,
               bg="#2196F3", fg="white", font=("Helvetica", 10),
               width=15).pack(pady=10)
+
+
+# Panel del Cliente
+def panel_cliente(nombre_cliente):
+    ventana = tk.Toplevel(window)
+    ventana.title("Panel de Cliente")
+    ventana.geometry("500x450")
+    ventana.resizable(False, False)
+    ventana.transient(window)
+    ventana.grab_set()
+
+    tk.Label(ventana, text=f"Bienvenido, {nombre_cliente}",
+             font=("Helvetica", 16, "bold")).pack(pady=20)
+
+    tk.Label(ventana, text="¿Qué deseas hacer?",
+             font=("Helvetica", 12)).pack(pady=10)
+
+    frame_botones = tk.Frame(ventana)
+    frame_botones.pack(pady=20)
+
+    tk.Button(frame_botones, text="Ver Horarios Disponibles",
+              command=lambda: ver_horarios_disponibles(nombre_cliente),
+              bg="#2196F3", fg="white",
+              font=("Helvetica", 11, "bold"),
+              width=22, height=2).pack(pady=10)
+
+    tk.Button(frame_botones, text="Asignarse a una Clase",
+              command=lambda: asignarse_clase(nombre_cliente),
+              bg="#4CAF50", fg="white",
+              font=("Helvetica", 11, "bold"),
+              width=22, height=2).pack(pady=10)
+
+    tk.Button(frame_botones, text="Salirse de una Clase",
+              command=lambda: salirse_clase(nombre_cliente),
+              bg="#FF9800", fg="white",
+              font=("Helvetica", 11, "bold"),
+              width=22, height=2).pack(pady=10)
+
+    tk.Button(frame_botones, text="Mis Clases Inscritas",
+              command=lambda: ver_mis_clases(nombre_cliente),
+              bg="#9C27B0", fg="white",
+              font=("Helvetica", 11, "bold"),
+              width=22, height=2).pack(pady=10)
+
+    tk.Button(ventana, text="Cerrar Sesión", command=ventana.destroy,
+              bg="#9E9E9E", fg="white", font=("Helvetica", 10),
+              width=15).pack(pady=15)
+
+
+def ver_horarios_disponibles(nombre_cliente):
+    if not CLASES:
+        messagebox.showinfo("Información", "No hay clases disponibles aún")
+        return
+
+    ventana = tk.Toplevel(window)
+    ventana.title("Horarios Disponibles")
+    ventana.geometry("600x450")
+    ventana.resizable(False, False)
+    ventana.grab_set()
+
+    tk.Label(ventana, text="Horarios de Clases Disponibles",
+             font=("Helvetica", 14, "bold")).pack(pady=15)
+
+    frame_tabla = tk.Frame(ventana)
+    frame_tabla.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
+
+    scrollbar = tk.Scrollbar(frame_tabla)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    texto = tk.Text(frame_tabla, yscrollcommand=scrollbar.set,
+                    font=("Courier", 10), height=15, width=70)
+    texto.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar.config(command=texto.yview)
+
+    # Inicializar inscripciones del cliente si no existen
+    if nombre_cliente not in INSCRIPCIONES:
+        INSCRIPCIONES[nombre_cliente] = []
+
+    for clase in CLASES:
+        disponibilidad = "LLENO" if clase['inscritos'] >= clase['cupo_maximo'] else "DISPONIBLE"
+        inscrito = "✓ YA INSCRITO" if clase['id'] in INSCRIPCIONES[nombre_cliente] else ""
+
+        info = f"{'=' * 60}\n"
+        info += f"Clase: {clase['nombre']}\n"
+        info += f"Día: {clase['dia']} | Hora: {clase['hora']}\n"
+        info += f"Cupos: {clase['inscritos']}/{clase['cupo_maximo']} | Estado: {disponibilidad}\n"
+        if inscrito:
+            info += f"{inscrito}\n"
+        info += f"{'=' * 60}\n\n"
+        texto.insert(tk.END, info)
+
+    texto.config(state=tk.DISABLED)
+
+    tk.Button(ventana, text="Cerrar", command=ventana.destroy,
+              bg="#2196F3", fg="white", font=("Helvetica", 10),
+              width=15).pack(pady=10)
+
