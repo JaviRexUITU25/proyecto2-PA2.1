@@ -414,3 +414,138 @@ def ver_horarios_disponibles(nombre_cliente):
               bg="#2196F3", fg="white", font=("Helvetica", 10),
               width=15).pack(pady=10)
 
+
+def asignarse_clase(nombre_cliente):
+    if not CLASES:
+        messagebox.showinfo("Información", "No hay clases disponibles")
+        return
+
+    # Inicializar inscripciones del cliente
+    if nombre_cliente not in INSCRIPCIONES:
+        INSCRIPCIONES[nombre_cliente] = []
+
+    # Filtrar clases disponibles
+    clases_disponibles = [c for c in CLASES if c['inscritos'] < c['cupo_maximo']
+                          and c['id'] not in INSCRIPCIONES[nombre_cliente]]
+
+    if not clases_disponibles:
+        messagebox.showinfo("Información", "No hay clases disponibles o ya estás inscrito en todas")
+        return
+
+    ventana = tk.Toplevel(window)
+    ventana.title("Asignarse a Clase")
+    ventana.geometry("550x400")
+    ventana.resizable(False, False)
+    ventana.grab_set()
+
+    tk.Label(ventana, text="Selecciona una clase para inscribirte",
+             font=("Helvetica", 14, "bold")).pack(pady=15)
+
+    frame_lista = tk.Frame(ventana)
+    frame_lista.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
+
+    scrollbar = tk.Scrollbar(frame_lista)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    lista = tk.Listbox(frame_lista, yscrollcommand=scrollbar.set,
+                       font=("Helvetica", 10), height=10)
+    lista.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar.config(command=lista.yview)
+
+    for clase in clases_disponibles:
+        texto = f"{clase['nombre']} | {clase['dia']} {clase['hora']} | Cupos: {clase['inscritos']}/{clase['cupo_maximo']}"
+        lista.insert(tk.END, texto)
+
+    def inscribirse():
+        seleccion = lista.curselection()
+        if not seleccion:
+            messagebox.showwarning("Advertencia", "Selecciona una clase")
+            return
+
+        indice = seleccion[0]
+        clase = clases_disponibles[indice]
+
+        # Encontrar la clase en CLASES y actualizar
+        for c in CLASES:
+            if c['id'] == clase['id']:
+                c['inscritos'] += 1
+                c['alumnos'].append(nombre_cliente)
+                break
+
+        INSCRIPCIONES[nombre_cliente].append(clase['id'])
+
+        messagebox.showinfo("Éxito", f"¡Te has inscrito a '{clase['nombre']}'!")
+        ventana.destroy()
+
+    tk.Button(ventana, text="Inscribirme", command=inscribirse,
+              bg="#4CAF50", fg="white", font=("Helvetica", 11, "bold"),
+              width=15, height=2).pack(pady=10)
+
+    tk.Button(ventana, text="Cancelar", command=ventana.destroy,
+              bg="#9E9E9E", fg="white", font=("Helvetica", 10),
+              width=15).pack()
+
+
+def salirse_clase(nombre_cliente):
+    if nombre_cliente not in INSCRIPCIONES or not INSCRIPCIONES[nombre_cliente]:
+        messagebox.showinfo("Información", "No estás inscrito en ninguna clase")
+        return
+
+    # Obtener clases en las que está inscrito
+    mis_clases = [c for c in CLASES if c['id'] in INSCRIPCIONES[nombre_cliente]]
+
+    ventana = tk.Toplevel(window)
+    ventana.title("Salirse de Clase")
+    ventana.geometry("550x400")
+    ventana.resizable(False, False)
+    ventana.grab_set()
+
+    tk.Label(ventana, text="Selecciona la clase de la que deseas salir",
+             font=("Helvetica", 14, "bold")).pack(pady=15)
+
+    frame_lista = tk.Frame(ventana)
+    frame_lista.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
+
+    scrollbar = tk.Scrollbar(frame_lista)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    lista = tk.Listbox(frame_lista, yscrollcommand=scrollbar.set,
+                       font=("Helvetica", 10), height=10)
+    lista.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar.config(command=lista.yview)
+
+    for clase in mis_clases:
+        texto = f"{clase['nombre']} | {clase['dia']} {clase['hora']}"
+        lista.insert(tk.END, texto)
+
+    def desinscribirse():
+        seleccion = lista.curselection()
+        if not seleccion:
+            messagebox.showwarning("Advertencia", "Selecciona una clase")
+            return
+
+        indice = seleccion[0]
+        clase = mis_clases[indice]
+
+        respuesta = messagebox.askyesno("Confirmar",
+                                        f"¿Deseas salir de '{clase['nombre']}'?")
+        if respuesta:
+            # Actualizar clase
+            for c in CLASES:
+                if c['id'] == clase['id']:
+                    c['inscritos'] -= 1
+                    c['alumnos'].remove(nombre_cliente)
+                    break
+
+            INSCRIPCIONES[nombre_cliente].remove(clase['id'])
+
+            messagebox.showinfo("Éxito", f"Te has dado de baja de '{clase['nombre']}'")
+            ventana.destroy()
+
+    tk.Button(ventana, text="Salir de Clase", command=desinscribirse,
+              bg="#FF9800", fg="white", font=("Helvetica", 11, "bold"),
+              width=15, height=2).pack(pady=10)
+
+    tk.Button(ventana, text="Cancelar", command=ventana.destroy,
+              bg="#9E9E9E", fg="white", font=("Helvetica", 10),
+              width=15).pack()
