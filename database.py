@@ -25,61 +25,13 @@ class Usuario:
                 (self.nombre,self.telefono, self.tipo)
             )
         print(f"Usuario: {self.nombre} registrado con éxito")
-    
 
 
-class Cliente(Usuario):
-    def __init__(self,nombre,telefono,tipo):
-        super().__init__(nombre,telefono,tipo)
-    def _conn(self):
-        conn = sqlite3.connect(DB_NAME)
-        conn.row_factory= sqlite3.Row
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS clientes (
-                id_usuario INTEGER PRIMARY KEY AUTOINCREMENT, 
-                nombre TEXT NOT NULL,
-                telefono TEXT NOT NULL,
-                tipo TEXT NOT NULL
-            );
-        """)
-        conn.commit()
-        return conn
-    def guardar(self):
-        with self._conn() as conn:
-            conn.execute(
-                "INSERT INTO clientes (nombre, telefono, tipo) VALUES (?,?,?)",
-                (self.nombre,self.telefono, self.tipo)
-            )
-        print(f"Usuario: {self.nombre} registrado con éxito")
-
-class Instructor(Usuario):
-    def __init__(self,nombre,telefono,tipo):
-        super().__init__(nombre,telefono,tipo)
-    def _conn(self):
-        conn = sqlite3.connect(DB_NAME)
-        conn.row_factory= sqlite3.Row
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS instructores (
-                id_usuario INTEGER PRIMARY KEY AUTOINCREMENT, 
-                nombre TEXT NOT NULL,
-                telefono TEXT NOT NULL,
-                tipo TEXT NOT NULL
-            );
-        """)
-        conn.commit()
-        return conn
-    def guardar(self):
-        with self._conn() as conn:
-            conn.execute(
-                "INSERT INTO instructores (nombre, telefono, tipo) VALUES (?,?,?)",
-                (self.nombre,self.telefono, self.tipo)
-            )
-        print(f"Usuario: {self.nombre} registrado con éxito")
-
-class sesiones():
-    def __init__(self,dia, hora):
+class Sesion():
+    def __init__(self,dia, hora, cupo_maximo):
         self.dia= dia
         self.hora = hora
+        self.cupo_maximo = cupo_maximo
 
     def _conn(self):
         conn = sqlite3.connect(DB_NAME)
@@ -89,6 +41,7 @@ class sesiones():
                 id_sesion INTEGER PRIMARY KEY AUTOINCREMENT, 
                 dia TEXT NOT NULL,
                 hora TEXT NOT NULL
+                cupo_maximo INTEGER NOT NULL
             );
         """)
         conn.commit()
@@ -96,8 +49,33 @@ class sesiones():
     def guardar(self):
         with self._conn() as conn:
             conn.execute(
-                "INSERT INTO sesiones (dia, hora) VALUES (?,?)",
-                (self.dia,self.hora)
+                "INSERT INTO sesiones (dia, hora, cupo_maximo) VALUES (?,?,?)",
+                (self.dia,self.hora, self.cupo_maximo)
             )
         print("Sesión registrada con éxito")
-Usuario("Juan",2223556,"Instructor").guardar()
+
+class Inscripcion:
+    def __init__(self,id_usuario, id_sesion):
+        self.id_usuario = id_usuario
+        self.id_sesion = id_sesion
+    def _conn(self):
+        conn = sqlite3.connect(DB_NAME)
+        conn.row_factory = sqlite3.Row
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS inscripciones (
+            id_inscripcion INTEGER PRIMARY KEY AUTOINCREMENT, 
+            id_usuario INTEGER NOT NULL,
+            id_sesion INTEGER NOT NULL, 
+            FOREIGN KEY(id_usuario) REFERENCES usuarios(id_usuario),
+            FOREIGN KEY(id_sesion) REFERENCES sesiones(id_sesion)
+            );
+        """)
+        conn.commit()
+        return conn
+    def guardar(self):
+        with self._conn() as conn:
+            conn.execute(
+                "INSERT INTO inscripciones (id_usuario, id_sesion) VALUES (?,?)",
+                (self.id_usuario, self.id_sesion)
+            )
+        print("Inscripción registrada con exito")
