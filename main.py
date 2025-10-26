@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 from datetime import datetime
+import database
+from database import verificar_usuario_existente, Usuario
 
 CLASES = []  # Lista de clases disponibles
 CLIENTES_REGISTRADOS = []  # Lista de clientes registrados
@@ -96,16 +98,16 @@ def login_cliente():
               width=15, height=2).pack(pady=15)
 
 
-btn_frame = tk.Frame(ventana)
-btn_frame.pack(pady=20)
-
-tk.Button(btn_frame, text="Instructor", command=login_instructor,
-          bg="#2196F3", fg="white", font=("Helvetica", 11, "bold"),
-          width=12, height=2).pack(side=tk.LEFT, padx=10)
-
-tk.Button(btn_frame, text="Cliente", command=login_cliente,
-          bg="#FF9800", fg="white", font=("Helvetica", 11, "bold"),
-          width=12, height=2).pack(side=tk.LEFT, padx=10)
+# btn_frame = tk.Frame(ventana)
+# btn_frame.pack(pady=20)
+#
+# tk.Button(btn_frame, text="Instructor", command=login_instructor,
+#           bg="#2196F3", fg="white", font=("Helvetica", 11, "bold"),
+#           width=12, height=2).pack(side=tk.LEFT, padx=10)
+#
+# tk.Button(btn_frame, text="Cliente", command=login_cliente,
+#           bg="#FF9800", fg="white", font=("Helvetica", 11, "bold"),
+#           width=12, height=2).pack(side=tk.LEFT, padx=10)
 
 
 def panel_instructor():
@@ -620,19 +622,18 @@ def ventana_registrarse():
             messagebox.showwarning("Advertencia", "Completa todos los campos")
             return
 
-        # Verificar si ya existe
-        for cliente in CLIENTES_REGISTRADOS:
-            if cliente['nombre'] == nombre or cliente['celular'] == celular:
-                messagebox.showerror("Error", "Este cliente ya está registrado")
-                return
-
-        CLIENTES_REGISTRADOS.append({'nombre': nombre, 'celular': celular})
+        if verificar_usuario_existente(nombre,celular):
+            messagebox.showwarning("Advertencia", "El usuario ya está registrado")
+            return
+        nuevo_usuario = Usuario(nombre,celular,"cliente")
+        nuevo_usuario.guardar()
         messagebox.showinfo("Éxito", f"¡Cliente {nombre} registrado exitosamente!\nAhora puedes iniciar sesión.")
         ventana.destroy()
 
-    tk.Button(ventana, text="Registrar", command=guardar_cliente,
-              bg="#4CAF50", fg="white", font=("Helvetica", 11, "bold"),
-              width=15, height=2).pack(pady=20)
+    btn_registrar= tk.Button(ventana, text="Registrar", command=guardar_cliente,
+                            bg="#4CAF50", fg="white", font=("Helvetica", 11, "bold"),
+                            width=15, height=2)
+    btn_registrar.pack(pady=20)
 
     tk.Button(ventana, text="Cancelar", command=ventana.destroy,
               bg="#f44336", fg="white", font=("Helvetica", 10),
