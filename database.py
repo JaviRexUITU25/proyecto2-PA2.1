@@ -87,3 +87,12 @@ def verificar_usuario_existente(nombre,telefono):
             (nombre,telefono)
         )
         return cur.fetchone() is not None
+
+conn = sqlite3.connect('gimnasio.db')
+cursor = conn.cursor()
+
+cursor.execute("SELECT * FROM usuarios")
+data = cursor.fetchall()
+for row in data:
+    print(row)
+conn.close()
