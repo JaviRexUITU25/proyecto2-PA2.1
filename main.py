@@ -79,14 +79,7 @@ def ventana_iniciar_sesion():
             nombre = entrada_nombre.get().strip()
             celular = entrada_celular.get().strip()
 
-            # Verificar si el cliente está registrado
-            cliente_encontrado = None
-            for cliente in CLIENTES_REGISTRADOS:
-                if cliente['nombre'] == nombre and cliente['celular'] == celular:
-                    cliente_encontrado = cliente
-                    break
-
-            if cliente_encontrado:
+            if verificar_usuario_existente(nombre,celular):
                 messagebox.showinfo(f"¡Bienvenido {nombre}!")
                 ventana_login.destroy()
                 panel_cliente(nombre)

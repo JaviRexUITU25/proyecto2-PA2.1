@@ -94,8 +94,16 @@ def verificar_usuario_existente(nombre,telefono):
 conn = sqlite3.connect('gimnasio.db')
 cursor = conn.cursor()
 
-cursor.execute("SELECT * FROM sesiones")
+cursor.execute("SELECT *FROM usuarios")
 data = cursor.fetchall()
 for row in data:
     print(row)
 conn.close()
+# def obtener_id(nombre,telefono):
+#     conn = sqlite3.connect('gimnasio.db')
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT id_usuario FROM usuarios WHERE nombre = ? AND telefono = ?")
+#     data = cursor.fetchall()
+#     for row in data:
+#         print(row)
+#     conn.close()
