@@ -28,10 +28,11 @@ class Usuario:
 
 
 class Sesion():
-    def __init__(self,dia, hora, cupo_maximo):
+    def __init__(self,nombre,dia, hora, cupo):
+        self.nombre = nombre
         self.dia= dia
         self.hora = hora
-        self.cupo_maximo = cupo_maximo
+        self.cupo = cupo
 
     def _conn(self):
         conn = sqlite3.connect(DB_NAME)
@@ -39,9 +40,10 @@ class Sesion():
         conn.execute("""
             CREATE TABLE IF NOT EXISTS sesiones (
                 id_sesion INTEGER PRIMARY KEY AUTOINCREMENT, 
+                nombre TEXT NOT NULL,
                 dia TEXT NOT NULL,
-                hora TEXT NOT NULL
-                cupo_maximo INTEGER NOT NULL
+                hora TEXT NOT NULL,
+                cupo INTEGER NOT NULL
             );
         """)
         conn.commit()
@@ -49,8 +51,8 @@ class Sesion():
     def guardar(self):
         with self._conn() as conn:
             conn.execute(
-                "INSERT INTO sesiones (dia, hora, cupo_maximo) VALUES (?,?,?)",
-                (self.dia,self.hora, self.cupo_maximo)
+                "INSERT INTO sesiones (nombre, dia, hora, cupo) VALUES (?,?,?,?)",
+                (self.nombre,self.dia,self.hora, self.cupo)
             )
         print("Sesión registrada con éxito")
 
@@ -88,10 +90,11 @@ def verificar_usuario_existente(nombre,telefono):
         )
         return cur.fetchone() is not None
 
+
 conn = sqlite3.connect('gimnasio.db')
 cursor = conn.cursor()
 
-cursor.execute("SELECT * FROM usuarios")
+cursor.execute("SELECT * FROM sesiones")
 data = cursor.fetchall()
 for row in data:
     print(row)
