@@ -33,8 +33,8 @@ class Sesion():
         self.dia= dia
         self.hora = hora
         self.cupo = cupo
-
-    def _conn(self):
+    @staticmethod
+    def _conn():
         conn = sqlite3.connect(DB_NAME)
         conn.row_factory= sqlite3.Row
         conn.execute("""
@@ -55,8 +55,8 @@ class Sesion():
                 (self.nombre,self.dia,self.hora, self.cupo)
             )
         print("Sesión registrada con éxito")
-
-    def listar(self):
+    @staticmethod
+    def listar():
         with Sesion._conn() as conn:
             cur = conn.execute("SELECT * FROM sesiones")
             filas = cur.fetchall()
@@ -66,12 +66,12 @@ class Sesion():
             print("Listado de sesiones")
             for f in filas:
                 print(f"ID: {f['id_sesion']} | Nombre: {f['nombre']} | Dia: {f['dia']} | Hora: {f['hora']} | Cupo : {f['Cupo']}")
-
-    def eliminar(self):
+    @staticmethod
+    def eliminar():
         with Sesion._conn() as conn:
-            conn.execute(
+            cur = conn.execute("DELETE FROM sesiones WHERE ")
 
-            )
+
 class Inscripcion:
     def __init__(self,id_usuario, id_sesion):
         self.id_usuario = id_usuario
@@ -125,3 +125,4 @@ def obtener_id(nombre,telefono):
 #     for row in data:
 #         print(row)
 #     conn.close()
+Sesion.listar()

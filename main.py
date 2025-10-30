@@ -203,7 +203,7 @@ def agregar_clase():
 
 
 def quitar_clase():
-    if not CLASES:
+    if not Sesion:
         messagebox.showinfo("No hay clases registradas")
         return
 
@@ -227,7 +227,7 @@ def quitar_clase():
     lista.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.config(command=lista.yview)
 
-    for clase in CLASES:
+    for clase in CLASES :
         texto = f"ID:{clase['id']} - {clase['nombre']} | {clase['dia']} {clase['hora']} | Inscritos: {clase['inscritos']}/{clase['cupo_maximo']}"
         lista.insert(tk.END, texto)
 
