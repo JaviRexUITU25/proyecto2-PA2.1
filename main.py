@@ -16,6 +16,7 @@ def ventana_iniciar_sesion():
     ventana.transient(window)
     ventana.grab_set()
     tk.Label(ventana, text="¿Cómo deseas iniciar sesión?",
+             bg= "#42a8a1",
              font=("Helvetica", 12, "bold")).pack(pady=30)
 
     def login_instructor():
@@ -31,6 +32,7 @@ def ventana_iniciar_sesion():
         ventana_login.grab_set()
 
         tk.Label(ventana_login, text="Iniciar Sesión como instructor",
+                 bg= "#42a8a1",
                  font=("Helvetica", 14, "bold")).pack(pady=20)
 
         tk.Label(ventana_login, text="Nombre:").pack(pady=5)
@@ -67,7 +69,7 @@ def ventana_iniciar_sesion():
         tk.Label(ventana_login, text="Iniciar Sesión como Cliente",
                  font=("Helvetica", 14, "bold")).pack(pady=20)
 
-        tk.Label(ventana_login, text="Nombre:").pack(pady=5)
+        tk.Label(ventana_login, text="ID:").pack(pady=5)
         entrada_nombre = tk.Entry(ventana_login, width=30)
         entrada_nombre.pack(pady=5)
 
@@ -76,13 +78,13 @@ def ventana_iniciar_sesion():
         entrada_celular.pack(pady=5)
 
         def validar_cliente():
-            nombre = entrada_nombre.get().strip()
+            ID = entrada_nombre.get().strip()
             celular = entrada_celular.get().strip()
 
-            if verificar_usuario_existente(nombre,celular):
-                messagebox.showinfo("Inicio de sesion confirmado", f"¡Bienvenido {nombre}!")
+            if verificar_usuario_existente(ID,celular):
+                messagebox.showinfo("Inicio de sesion confirmado", f"¡Bienvenido {ID}!")
                 ventana_login.destroy()
-                panel_cliente(nombre)
+                panel_cliente(ID)
             else:
                 messagebox.showerror("Error", "Cliente no registrado. Por favor regístrate primero.")
 
@@ -632,33 +634,35 @@ window.resizable(False, False)
 frame_principal = tk.Frame(window)
 frame_principal.pack(fill=tk.BOTH, expand=True)
 
-frame_izquierdo = tk.Frame(frame_principal, width=400)
+frame_izquierdo = tk.Frame(frame_principal, width=400, bg= "#42a8a1")
 frame_izquierdo.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20)
 
 tk.Label(frame_izquierdo, text="Bienvenido a la gestión de DAC",
+         bg="#42a8a1",
          font=("Helvetica", 18, "bold")).pack(pady=40)
 
 tk.Label(frame_izquierdo, text="Selecciona una opción:",
+         bg= "#42a8a1",
          font=("Helvetica", 12)).pack(pady=20)
 
-frame_botones = tk.Frame(frame_izquierdo)
+frame_botones = tk.Frame(frame_izquierdo,bg= "#42a8a1")
 frame_botones.pack(pady=30)
 
 btn_login = tk.Button(frame_botones, text="Iniciar Sesión",
                       command=ventana_iniciar_sesion,
-                      bg="#2196F3", fg="white",
+                      bg="#ADEBB3", fg="black",
                       font=("Helvetica", 12, "bold"),
                       width=15, height=2)
 btn_login.pack(pady=10)
 
 btn_registro = tk.Button(frame_botones, text="Registrarse",
                          command=ventana_registrarse,
-                         bg="#4CAF50", fg="white",
+                         bg="#ADEBB3", fg="black",
                          font=("Helvetica", 12, "bold"),
                          width=15, height=2)
 btn_registro.pack(pady=10)
 
-frame_derecho = tk.Frame(frame_principal, width=350, bg="#f0f0f0")
+frame_derecho = tk.Frame(frame_principal, width=350, bg="#42a8a1")
 frame_derecho.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
 try:
@@ -668,13 +672,13 @@ try:
     imagen = imagen.resize((330, 380), Image.Resampling.LANCZOS)
     photo = ImageTk.PhotoImage(imagen)
 
-    label_imagen = tk.Label(frame_derecho, image=photo, bg="#f0f0f0")
+    label_imagen = tk.Label(frame_derecho, image=photo, bg="#42a8a1")
     label_imagen.image = photo
     label_imagen.pack(pady=10)
 except Exception as e:
     tk.Label(frame_derecho, text="\n\nDAC\n\nPILATES",
              font=("Helvetica", 36, "bold"),
-             bg="#f0f0f0",
+             bg="#42a8a1",
              fg="#2196F3").pack(expand=True)
 
 window.mainloop()
