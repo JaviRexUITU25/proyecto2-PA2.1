@@ -42,8 +42,9 @@ def ventana_iniciar_sesion():
         entrada_celular.pack(pady=5)
 
         def validar_instructor():
-            if (entrada_nombre.get() == INSTRUCTOR_NOMBRE and
-                entrada_celular.get() == INSTRUCTOR_CELULAR):
+            nombre = entrada_nombre.get().strip()
+            celular = entrada_celular.get().strip()
+            if  verificar_usuario_existente(nombre,celular):
                 messagebox.showinfo("Éxito", f"¡Bienvenido Instructor {INSTRUCTOR_NOMBRE}!")
                 ventana_login.destroy()
                 panel_instructor()

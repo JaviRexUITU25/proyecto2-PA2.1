@@ -56,6 +56,22 @@ class Sesion():
             )
         print("Sesión registrada con éxito")
 
+    def listar(self):
+        with Sesion._conn() as conn:
+            cur = conn.execute("SELECT * FROM sesiones")
+            filas = cur.fetchall()
+            if not filas:
+                print("No hay sesiones registradas")
+                return
+            print("Listado de sesiones")
+            for f in filas:
+                print(f"ID: {f['id_sesion']} | Nombre: {f['nombre']} | Dia: {f['dia']} | Hora: {f['hora']} | Cupo : {f['Cupo']}")
+
+    def eliminar(self):
+        with Sesion._conn() as conn:
+            conn.execute(
+
+            )
 class Inscripcion:
     def __init__(self,id_usuario, id_sesion):
         self.id_usuario = id_usuario
@@ -94,16 +110,18 @@ def verificar_usuario_existente(nombre,telefono):
 conn = sqlite3.connect('gimnasio.db')
 cursor = conn.cursor()
 
-cursor.execute("SELECT *FROM usuarios")
+cursor.execute("SELECT * FROM usuarios")
+# conn.commit()
+# conn.close()
 data = cursor.fetchall()
 for row in data:
     print(row)
 conn.close()
-# def obtener_id(nombre,telefono):
-#     conn = sqlite3.connect('gimnasio.db')
-#     cursor = conn.cursor()
-#     cursor.execute("SELECT id_usuario FROM usuarios WHERE nombre = ? AND telefono = ?")
-#     data = cursor.fetchall()
+def obtener_id(nombre,telefono):
+    conn = sqlite3.connect('gimnasio.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT id_usuario FROM usuarios WHERE nombre = ? AND telefono = ?")
+    data = cursor.fetchall()
 #     for row in data:
 #         print(row)
 #     conn.close()
