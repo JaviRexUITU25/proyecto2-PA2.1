@@ -81,7 +81,7 @@ def ventana_iniciar_sesion():
             celular = entrada_celular.get().strip()
 
             if verificar_usuario_existente(nombre,celular):
-                messagebox.showinfo(f"¡Bienvenido {nombre}!")
+                messagebox.showinfo("Inicio de sesion confirmado", f"¡Bienvenido {nombre}!")
                 ventana_login.destroy()
                 panel_cliente(nombre)
             else:
