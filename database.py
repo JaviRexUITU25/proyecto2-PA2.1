@@ -65,7 +65,8 @@ class Sesion:
     @staticmethod
     def eliminar(id_sesion):
         with Sesion._conn() as conn:
-            conn.execute("DELETE FROM sesiones WHERE id_sesion = ?", (id_sesion,))
+            conn.execute("DELETE FROM sesiones WHERE id_sesion = ?",
+            (id_sesion,))
             conn.commit()
             print(f"Sesión {id_sesion} eliminada con éxito")
 
@@ -108,6 +109,15 @@ class Inscripcion:
             WHERE inscripciones.id_usuario = ?
         """, (id_usuario,))
         return cur.fetchall()
+
+    @staticmethod
+    def eliminar_inscripcion(id_usuario, id_sesion):
+        with Inscripcion._conn() as conn:
+            conn.execute(
+                "DELETE FROM inscripciones WHERe id_usuario = ? AND id_sesion = ?",
+                (id_usuario,id_sesion)
+            )
+            conn.commit()
 def verificar_usuario_existente(nombre,telefono):
     with sqlite3.connect(DB_NAME) as conn:
         conn.row_factory = sqlite3.Row
