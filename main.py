@@ -263,7 +263,8 @@ def quitar_clase():
 
 
 def ver_clases_instructor():
-    if not CLASES:
+    clases = database.Sesion.listar()
+    if not clases:
         messagebox.showinfo("Información", "No hay clases registradas")
         return
 
@@ -287,14 +288,12 @@ def ver_clases_instructor():
     texto.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.config(command=texto.yview)
 
-    for clase in CLASES:
+    for clase in clases:
         info = f"{'=' * 60}\n"
-        info += f"ID: {clase['id']}\n"
+        info += f"ID: {clase['id_sesion']}\n"
         info += f"Nombre: {clase['nombre']}\n"
         info += f"Día: {clase['dia']} | Hora: {clase['hora']}\n"
-        info += f"Inscritos: {clase['inscritos']}/{clase['cupo_maximo']}\n"
-        if clase['alumnos']:
-            info += f"Alumnos: {', '.join(clase['alumnos'])}\n"
+        info += f"Cupo: {clase['cupo']}\n"
         info += f"{'=' * 60}\n\n"
         texto.insert(tk.END, info)
 

@@ -27,7 +27,7 @@ class Usuario:
         print(f"Usuario: {self.nombre} registrado con éxito")
 
 
-class Sesion():
+class Sesion:
     def __init__(self,nombre,dia, hora, cupo):
         self.nombre = nombre
         self.dia= dia
@@ -55,21 +55,14 @@ class Sesion():
                 (self.nombre,self.dia,self.hora, self.cupo)
             )
         print("Sesión registrada con éxito")
+
     @staticmethod
     def listar():
         with Sesion._conn() as conn:
             cur = conn.execute("SELECT * FROM sesiones")
-            filas = cur.fetchall()
-            if not filas:
-                print("No hay sesiones registradas")
-                return
-            print("Listado de sesiones")
-            for f in filas:
-                print(f"ID: {f['id_sesion']} | Nombre: {f['nombre']} | Dia: {f['dia']} | Hora: {f['hora']} | Cupo : {f['Cupo']}")
-    @staticmethod
-    def eliminar():
-        with Sesion._conn() as conn:
-            cur = conn.execute("DELETE FROM sesiones WHERE ")
+            return cur.fetchall()
+
+
 
 
 class Inscripcion:
