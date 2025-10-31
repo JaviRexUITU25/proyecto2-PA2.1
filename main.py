@@ -203,7 +203,8 @@ def agregar_clase():
 
 
 def quitar_clase():
-    if not Sesion:
+    clases = Sesion.listar()
+    if not clases:
         messagebox.showinfo("No hay clases registradas")
         return
 
@@ -227,8 +228,8 @@ def quitar_clase():
     lista.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.config(command=lista.yview)
 
-    for clase in CLASES :
-        texto = f"ID:{clase['id']} - {clase['nombre']} | {clase['dia']} {clase['hora']} | Inscritos: {clase['inscritos']}/{clase['cupo_maximo']}"
+    for clase in clases:
+        texto = f"ID:{clase['id_sesion']} - {clase['nombre']} | {clase['dia']} {clase['hora']} | Cupo: {clase['cupo']}"
         lista.insert(tk.END, texto)
 
     def eliminar_seleccionada():
@@ -238,18 +239,14 @@ def quitar_clase():
             return
 
         indice = seleccion[0]
-        clase = CLASES[indice]
+        clase = clases[indice]
 
         respuesta = messagebox.askyesno("Confirmar",
-                                        f"¿Eliminar la clase '{clase['nombre']}'?\n"
-                                        f"Hay {clase['inscritos']} alumno(s) inscrito(s).")
+                                    f"¿Eliminar la clase '{clase['nombre']}' del día {clase['dia']}?")
+
         if respuesta:
             # Remover inscripciones de clientes
-            for cliente_nombre in list(INSCRIPCIONES.keys()):
-                if clase['id'] in INSCRIPCIONES[cliente_nombre]:
-                    INSCRIPCIONES[cliente_nombre].remove(clase['id'])
-
-            CLASES.pop(indice)
+            Sesion.eliminar(clase['id_sesion'])
             messagebox.showinfo("Clase eliminada exitosamente")
             ventana.destroy()
 

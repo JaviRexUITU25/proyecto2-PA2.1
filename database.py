@@ -62,6 +62,13 @@ class Sesion:
             cur = conn.execute("SELECT * FROM sesiones")
             return cur.fetchall()
 
+    @staticmethod
+    def eliminar(id_sesion):
+        with Sesion._conn() as conn:
+            conn.execute("DELETE FROM sesiones WHERE id_sesion = ?", (id_sesion,))
+            conn.commit()
+            print(f"Sesión {id_sesion} eliminada con éxito")
+
 
 
 
