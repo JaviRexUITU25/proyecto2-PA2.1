@@ -349,7 +349,8 @@ def panel_cliente(nombre_cliente):
 
 
 def ver_horarios_disponibles(nombre_cliente):
-    if not CLASES:
+    clases = Sesion.listar()
+    if not clases:
         messagebox.showinfo("Información", "No hay clases disponibles aún")
         return
 
@@ -373,20 +374,12 @@ def ver_horarios_disponibles(nombre_cliente):
     texto.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.config(command=texto.yview)
 
-    # Inicializar inscripciones del cliente si no existen
-    if nombre_cliente not in INSCRIPCIONES:
-        INSCRIPCIONES[nombre_cliente] = []
 
-    for clase in CLASES:
-        disponibilidad = "LLENO" if clase['inscritos'] >= clase['cupo_maximo'] else "DISPONIBLE"
-        inscrito = "✓ YA INSCRITO" if clase['id'] in INSCRIPCIONES[nombre_cliente] else ""
-
+    for clase in clases:
         info = f"{'=' * 60}\n"
         info += f"Clase: {clase['nombre']}\n"
         info += f"Día: {clase['dia']} | Hora: {clase['hora']}\n"
-        info += f"Cupos: {clase['inscritos']}/{clase['cupo_maximo']} | Estado: {disponibilidad}\n"
-        if inscrito:
-            info += f"{inscrito}\n"
+        info += f"Cupo: {clase['cupo']}\n"
         info += f"{'=' * 60}\n\n"
         texto.insert(tk.END, info)
 
