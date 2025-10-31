@@ -59,6 +59,7 @@ class Sesion:
     @staticmethod
     def listar():
         with Sesion._conn() as conn:
+            conn.row_factory = sqlite3.Row
             cur = conn.execute("SELECT * FROM sesiones")
             return cur.fetchall()
 
@@ -105,7 +106,7 @@ class Inscripcion:
         cur = conn.execute("""
             SELECT sesiones.*
             FROM inscripciones
-            INNER JOIN sesiones ON inscripciones.id_sesion = id_sesion
+            INNER JOIN sesiones ON inscripciones.id_sesion = sesiones.id_sesion
             WHERE inscripciones.id_usuario = ?
         """, (id_usuario,))
         return cur.fetchall()
@@ -118,6 +119,15 @@ class Inscripcion:
                 (id_usuario,id_sesion)
             )
             conn.commit()
+
+    @staticmethod
+    def obtener_id_usuario(nombre, telefono):
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.execute("SELECT id_usuario FROM usuarios WHERE nombre=? AND telefono=?",
+                               (nombre, telefono))
+            fila = cur.fetchone()
+            return fila["id_usuario"] if fila else None
 def verificar_usuario_existente(nombre,telefono):
     with sqlite3.connect(DB_NAME) as conn:
         conn.row_factory = sqlite3.Row

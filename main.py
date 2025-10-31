@@ -83,7 +83,7 @@ def ventana_iniciar_sesion():
             if verificar_usuario_existente(nombre,celular):
                 messagebox.showinfo("Inicio de sesion confirmado", f"¡Bienvenido {nombre}!")
                 ventana_login.destroy()
-                panel_cliente(nombre)
+                panel_cliente(nombre,celular)
             else:
                 messagebox.showerror("Error", "Cliente no registrado. Por favor regístrate primero.")
 
@@ -302,7 +302,7 @@ def ver_clases_instructor():
 
 
 # Panel del Cliente
-def panel_cliente(nombre_cliente):
+def panel_cliente(nombre_cliente, telefono_cliente = ""):
     ventana = tk.Toplevel(window)
     ventana.title("Panel de Cliente")
     ventana.geometry("500x450")
@@ -326,7 +326,7 @@ def panel_cliente(nombre_cliente):
               width=22, height=2).pack(pady=10)
 
     tk.Button(frame_botones, text="Asignarse a una Clase",
-              command=lambda: asignarse_clase(nombre_cliente),
+              command=lambda: asignarse_clase(nombre_cliente,telefono_cliente),
               bg="#4CAF50", fg="white",
               font=("Helvetica", 11, "bold"),
               width=22, height=2).pack(pady=10)
@@ -390,21 +390,24 @@ def ver_horarios_disponibles(nombre_cliente):
               width=15).pack(pady=10)
 
 
-def asignarse_clase(nombre_cliente):
-    if not CLASES:
+def asignarse_clase(nombre_cliente, telefono_cliente):
+    id_usuario = database.Inscripcion.obtener_id_usuario(nombre_cliente,telefono_cliente)
+    if not id_usuario:
+        messagebox.showerror("Error", "Usuario no encontrado")
+        return
+    clases = Sesion.listar()
+    if not clases:
         messagebox.showinfo("Información", "No hay clases disponibles")
         return
 
-    # Inicializar inscripciones del cliente
-    if nombre_cliente not in INSCRIPCIONES:
-        INSCRIPCIONES[nombre_cliente] = []
+    clases_inscritas = database.Inscripcion.listar_por_usuario(id_usuario)
+    id_sesiones_inscritas = [c["id_sesion"] for c in clases_inscritas]
 
-    # Filtrar clases disponibles
-    clases_disponibles = [c for c in CLASES if c['inscritos'] < c['cupo_maximo']
-                          and c['id'] not in INSCRIPCIONES[nombre_cliente]]
+    clases_disponibles = [c for c in clases if c["id_sesion"] not in id_sesiones_inscritas]
+
 
     if not clases_disponibles:
-        messagebox.showinfo("Información", "No hay clases disponibles o ya estás inscrito en todas")
+        messagebox.showinfo("Información", "Ya estás inscrito en todas las clases disponibles")
         return
 
     ventana = tk.Toplevel(window)
@@ -428,7 +431,7 @@ def asignarse_clase(nombre_cliente):
     scrollbar.config(command=lista.yview)
 
     for clase in clases_disponibles:
-        texto = f"{clase['nombre']} | {clase['dia']} {clase['hora']} | Cupos: {clase['inscritos']}/{clase['cupo_maximo']}"
+        texto = f"{clase['nombre']} | {clase['dia']} {clase['hora']} | Cupos: {clase['cupo']}"
         lista.insert(tk.END, texto)
 
     def inscribirse():
@@ -437,17 +440,9 @@ def asignarse_clase(nombre_cliente):
             messagebox.showwarning("Advertencia", "Selecciona una clase")
             return
 
-        indice = seleccion[0]
-        clase = clases_disponibles[indice]
-
-        # Encontrar la clase en CLASES y actualizar
-        for c in CLASES:
-            if c['id'] == clase['id']:
-                c['inscritos'] += 1
-                c['alumnos'].append(nombre_cliente)
-                break
-
-        INSCRIPCIONES[nombre_cliente].append(clase['id'])
+        clase = clases_disponibles[seleccion[0]]
+        nueva = database.Inscripcion(id_usuario, clase["id_sesion"])
+        nueva.guardar()
 
         messagebox.showinfo("Éxito", f"¡Te has inscrito a '{clase['nombre']}'!")
         ventana.destroy()
