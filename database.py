@@ -97,6 +97,17 @@ class Inscripcion:
                 (self.id_usuario, self.id_sesion)
             )
         print("Inscripción registrada con exito")
+    @staticmethod
+    def listar_por_usuario(id_usuario):
+        conn = sqlite3.connect(DB_NAME)
+        conn.row_factory = sqlite3.Row
+        cur = conn.execute("""
+            SELECT sesiones.*
+            FROM inscripciones
+            INNER JOIN sesiones ON inscripciones.id_sesion = id_sesion
+            WHERE inscripciones.id_usuario = ?
+        """, (id_usuario,))
+        return cur.fetchall()
 def verificar_usuario_existente(nombre,telefono):
     with sqlite3.connect(DB_NAME) as conn:
         conn.row_factory = sqlite3.Row
