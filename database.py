@@ -113,12 +113,13 @@ class Inscripcion:
 
     @staticmethod
     def eliminar_inscripcion(id_usuario, id_sesion):
-        with Inscripcion._conn() as conn:
-            conn.execute(
+        conn = sqlite3.connect(DB_NAME)
+        conn.row_factory = sqlite3.Row
+        conn.execute(
                 "DELETE FROM inscripciones WHERe id_usuario = ? AND id_sesion = ?",
                 (id_usuario,id_sesion)
             )
-            conn.commit()
+        conn.commit()
 
     @staticmethod
     def obtener_id_usuario(nombre, telefono):

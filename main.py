@@ -332,7 +332,7 @@ def panel_cliente(nombre_cliente, telefono_cliente = ""):
               width=22, height=2).pack(pady=10)
 
     tk.Button(frame_botones, text="Salirse de una Clase",
-              command=lambda: salirse_clase(nombre_cliente),
+              command=lambda: salirse_clase(nombre_cliente,telefono_cliente),
               bg="#FF9800", fg="white",
               font=("Helvetica", 11, "bold"),
               width=22, height=2).pack(pady=10)
@@ -456,13 +456,16 @@ def asignarse_clase(nombre_cliente, telefono_cliente):
               width=15).pack()
 
 
-def salirse_clase(nombre_cliente):
-    if nombre_cliente not in INSCRIPCIONES or not INSCRIPCIONES[nombre_cliente]:
+def salirse_clase(nombre_cliente, telefono_cliente):
+    id_usuario = database.Inscripcion.obtener_id_usuario(nombre_cliente,telefono_cliente)
+    if not id_usuario:
+        messagebox.showerror("Error", "Usuario no encontrado")
+        return
+    clases = database.Inscripcion.listar_por_usuario(id_usuario)
+    if not clases:
         messagebox.showinfo("Información", "No estás inscrito en ninguna clase")
         return
 
-    # Obtener clases en las que está inscrito
-    mis_clases = [c for c in CLASES if c['id'] in INSCRIPCIONES[nombre_cliente]]
 
     ventana = tk.Toplevel(window)
     ventana.title("Salirse de Clase")
@@ -484,7 +487,7 @@ def salirse_clase(nombre_cliente):
     lista.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.config(command=lista.yview)
 
-    for clase in mis_clases:
+    for clase in clases:
         texto = f"{clase['nombre']} | {clase['dia']} {clase['hora']}"
         lista.insert(tk.END, texto)
 
@@ -494,20 +497,13 @@ def salirse_clase(nombre_cliente):
             messagebox.showwarning("Advertencia", "Selecciona una clase")
             return
 
-        indice = seleccion[0]
-        clase = mis_clases[indice]
+        clase = clases[seleccion[0]]
 
         respuesta = messagebox.askyesno("Confirmar",
                                         f"¿Deseas salir de '{clase['nombre']}'?")
         if respuesta:
             # Actualizar clase
-            for c in CLASES:
-                if c['id'] == clase['id']:
-                    c['inscritos'] -= 1
-                    c['alumnos'].remove(nombre_cliente)
-                    break
-
-            INSCRIPCIONES[nombre_cliente].remove(clase['id'])
+            database.Inscripcion.eliminar_inscripcion(id_usuario,clase["id_sesion"])
 
             messagebox.showinfo("Éxito", f"Te has dado de baja de '{clase['nombre']}'")
             ventana.destroy()
