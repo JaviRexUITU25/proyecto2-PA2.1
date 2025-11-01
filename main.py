@@ -591,8 +591,15 @@ def ventana_registrarse():
             return
         nuevo_usuario = Usuario(nombre,celular,"cliente")
         nuevo_usuario.guardar()
-        messagebox.showinfo("Éxito", f"¡Cliente {nombre} registrado exitosamente!\nAhora puedes iniciar sesión.")
-        ventana.destroy()
+        codigo = nuevo_usuario.obtener_id()
+        if codigo:
+            messagebox.showinfo("Registro exitoso",
+                                f"¡Cliente {nombre} registrado exitosamente!\n"
+                                f"Tu código de usuario es: {codigo}\n"
+                                f"Guárdalo, lo necesitarás para iniciar sesión.")
+            ventana.destroy()
+        else:
+            messagebox.showerror("Error", "No se pudo obtener el código del usuario.")
 
     btn_registrar= tk.Button(ventana, text="Registrar", command=guardar_cliente,
                             bg="#4CAF50", fg="white", font=("Helvetica", 11, "bold"),

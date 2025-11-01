@@ -35,6 +35,15 @@ class Usuario:
             )
             return cur.fetchone() is not None
 
+    def obtener_id(self):
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.execute(
+                "SELECT id_usuario FROM usuarios WHERE nombre=? AND telefono=?",
+                (self.nombre, self.telefono)
+            )
+            fila = cur.fetchone()
+            return fila["id_usuario"] if fila else None
 
 class Sesion:
     def __init__(self,nombre,dia, hora, cupo):
@@ -151,11 +160,4 @@ data = cursor.fetchall()
 for row in data:
     print(row)
 conn.close()
-def obtener_id(nombre,telefono):
-    conn = sqlite3.connect('gimnasio.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT id_usuario FROM usuarios WHERE nombre = ? AND telefono = ?")
-    data = cursor.fetchall()
-#     for row in data:
-#         print(row)
-#     conn.close()
+
