@@ -4,10 +4,6 @@ from datetime import datetime
 import database
 from database import  Usuario, Sesion
 
-CLASES = []  # Lista de clases disponibles
-CLIENTES_REGISTRADOS = []  # Lista de clientes registrados
-INSCRIPCIONES = {}  # {cliente_nombre: [lista de clases]}
-
 def ventana_iniciar_sesion():
     ventana = tk.Toplevel(window)
     ventana.title("Iniciar Sesión")
