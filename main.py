@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from datetime import datetime
 import database
-from database import verificar_usuario_existente, Usuario, Sesion
+from database import  Usuario, Sesion
 
 CLASES = []  # Lista de clases disponibles
 CLIENTES_REGISTRADOS = []  # Lista de clientes registrados
@@ -44,7 +44,7 @@ def ventana_iniciar_sesion():
         def validar_instructor():
             nombre = entrada_nombre.get().strip()
             celular = entrada_celular.get().strip()
-            if  verificar_usuario_existente(nombre,celular):
+            if  Usuario.verificar_usuario_existente(nombre,celular):
                 messagebox.showinfo("Éxito", f"¡Bienvenido Instructor {INSTRUCTOR_NOMBRE}!")
                 ventana_login.destroy()
                 panel_instructor()
@@ -80,7 +80,7 @@ def ventana_iniciar_sesion():
             nombre = entrada_nombre.get().strip()
             celular = entrada_celular.get().strip()
 
-            if verificar_usuario_existente(nombre,celular):
+            if Usuario.verificar_usuario_existente(nombre,celular):
                 messagebox.showinfo("Inicio de sesion confirmado", f"¡Bienvenido {nombre}!")
                 ventana_login.destroy()
                 panel_cliente(nombre,celular)
@@ -338,7 +338,7 @@ def panel_cliente(nombre_cliente, telefono_cliente = ""):
               width=22, height=2).pack(pady=10)
 
     tk.Button(frame_botones, text="Mis Clases Inscritas",
-              command=lambda: ver_mis_clases(nombre_cliente),
+              command=lambda: ver_mis_clases(nombre_cliente,telefono_cliente),
               bg="#9C27B0", fg="white",
               font=("Helvetica", 11, "bold"),
               width=22, height=2).pack(pady=10)
@@ -517,12 +517,16 @@ def salirse_clase(nombre_cliente, telefono_cliente):
               width=15).pack()
 
 
-def ver_mis_clases(nombre_cliente):
-    if nombre_cliente not in INSCRIPCIONES or not INSCRIPCIONES[nombre_cliente]:
+def ver_mis_clases(nombre_cliente,telefono_cliente):
+    id_usuario = database.Inscripcion.obtener_id_usuario(nombre_cliente,telefono_cliente)
+    if not id_usuario:
+        messagebox.showerror("Error", "Usuario no encontrado")
+        return
+    clases = database.Inscripcion.listar_por_usuario(id_usuario)
+    if not clases:
         messagebox.showinfo("Información", "No estás inscrito en ninguna clase")
         return
 
-    mis_clases = [c for c in CLASES if c['id'] in INSCRIPCIONES[nombre_cliente]]
 
     ventana = tk.Toplevel(window)
     ventana.title("Mis Clases")
@@ -544,7 +548,7 @@ def ver_mis_clases(nombre_cliente):
     texto.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.config(command=texto.yview)
 
-    for clase in mis_clases:
+    for clase in clases:
         info = f"{'=' * 50}\n"
         info += f"Clase: {clase['nombre']}\n"
         info += f"Día: {clase['dia']}\n"
@@ -586,7 +590,7 @@ def ventana_registrarse():
             messagebox.showwarning("Advertencia", "Completa todos los campos")
             return
 
-        if verificar_usuario_existente(nombre,celular):
+        if database.Usuario.verificar_usuario_existente(nombre,celular):
             messagebox.showwarning("Advertencia", "El usuario ya está registrado")
             return
         nuevo_usuario = Usuario(nombre,celular,"cliente")

@@ -26,6 +26,15 @@ class Usuario:
             )
         print(f"Usuario: {self.nombre} registrado con éxito")
 
+    def verificar_usuario_existente(nombre, telefono):
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.execute(
+                "SELECT id_usuario FROM usuarios WHERE nombre = ? AND telefono = ?",
+                (nombre, telefono)
+            )
+            return cur.fetchone() is not None
+
 
 class Sesion:
     def __init__(self,nombre,dia, hora, cupo):
@@ -129,14 +138,7 @@ class Inscripcion:
                                (nombre, telefono))
             fila = cur.fetchone()
             return fila["id_usuario"] if fila else None
-def verificar_usuario_existente(nombre,telefono):
-    with sqlite3.connect(DB_NAME) as conn:
-        conn.row_factory = sqlite3.Row
-        cur = conn.execute(
-            "SELECT id_usuario FROM usuarios WHERE nombre = ? AND telefono = ?",
-            (nombre,telefono)
-        )
-        return cur.fetchone() is not None
+
 
 
 conn = sqlite3.connect('gimnasio.db')
@@ -157,4 +159,3 @@ def obtener_id(nombre,telefono):
 #     for row in data:
 #         print(row)
 #     conn.close()
-Sesion.listar()
