@@ -8,6 +8,18 @@ CLASES = []
 CLIENTES_REGISTRADOS = []
 INSCRIPCIONES = {}
 
+# Paleta de colores
+COLOR_PRIMARY = "#6B4CE6"  # Morado suave
+COLOR_SECONDARY = "#FF6B9D"  # Rosa vibrante
+COLOR_SUCCESS = "#4ECDC4"  # Turquesa
+COLOR_WARNING = "#FFB84D"  # Naranja suave
+COLOR_DANGER = "#FF6B6B"  # Rojo coral
+COLOR_INFO = "#95E1D3"  # Verde menta
+COLOR_DARK = "#2D3436"  # Gris oscuro
+COLOR_LIGHT = "#F8F9FA"  # Gris muy claro
+COLOR_BG = "#FFEEF8"  # Rosa muy suave
+
+
 def ventana_iniciar_sesion():
     ventana = tk.Toplevel(window)
     ventana.title("🔐 Iniciar Sesión")
