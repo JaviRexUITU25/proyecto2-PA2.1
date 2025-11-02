@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-from datetime import datetime
 import database
 from database import verificar_usuario_existente, Usuario, Sesion
-
+#LISTAS TEMPORALES,
+# SE GUARDARÁ EN SQLITE
 CLASES = []
 CLIENTES_REGISTRADOS = []
 INSCRIPCIONES = {}
@@ -19,7 +19,7 @@ COLOR_DARK = "#2D3436"  # Gris oscuro
 COLOR_LIGHT = "#F8F9FA"  # Gris muy claro
 COLOR_BG = "#FFEEF8"  # Rosa muy suave
 
-
+# Ventana emergente al inciar sesion
 def ventana_iniciar_sesion():
     ventana = tk.Toplevel(window)
     ventana.title("🔐 Iniciar Sesión")
@@ -29,9 +29,10 @@ def ventana_iniciar_sesion():
     ventana.grab_set()
     ventana.configure(bg=COLOR_BG)
 
-    tk.Label(ventana, text="🧘‍♀️ ¿Cómo deseas iniciar sesión? 🧘‍♂️",
+    tk.Label(ventana, text="🧘‍♀️ ¿Cómo deseas iniciar sesión? 🧘‍♂️", #MUESTRA SI QUIERES ENTRAR COMO INSTRUCTOR O COMO CLIENTE
              font=("Helvetica", 18, "bold"), bg=COLOR_BG, fg=COLOR_DARK).pack(pady=50)
 
+#VENTANA DEL INSTRUCTOR
     def login_instructor():
         INSTRUCTOR_NOMBRE = "Fabiola Acevez"
         INSTRUCTOR_CELULAR = "45348967"
@@ -56,6 +57,7 @@ def ventana_iniciar_sesion():
         entrada_celular = tk.Entry(ventana_login, width=40, font=("Helvetica", 14), relief=tk.FLAT, bd=2)
         entrada_celular.pack(pady=10, ipady=8)
 
+#Validar los datos del instructor
         def validar_instructor():
             nombre = entrada_nombre.get().strip()
             celular = entrada_celular.get().strip()
@@ -66,10 +68,12 @@ def ventana_iniciar_sesion():
             else:
                 messagebox.showerror("❌ Error", "Credenciales incorrectas")
 
-        tk.Button(ventana_login, text="✨ Ingresar", command=validar_instructor,
+        tk.Button(ventana_login, text=" Ingresar", command=validar_instructor,
                   bg=COLOR_PRIMARY, fg="white", font=("Helvetica", 14, "bold"),
                   width=20, height=2, relief=tk.FLAT, cursor="hand2").pack(pady=30)
 
+
+#VENTANA PARA LOS CLIENTES
     def login_cliente():
         ventana.destroy()
         ventana_login = tk.Toplevel(window)
@@ -91,6 +95,7 @@ def ventana_iniciar_sesion():
         entrada_celular = tk.Entry(ventana_login, width=40, font=("Helvetica", 14), relief=tk.FLAT, bd=2)
         entrada_celular.pack(pady=10, ipady=8)
 
+#VALIDAR LOS DATOS DEL CLIENTE
         def validar_cliente():
             nombre = entrada_nombre.get().strip()
             celular = entrada_celular.get().strip()
@@ -100,9 +105,9 @@ def ventana_iniciar_sesion():
                 ventana_login.destroy()
                 panel_cliente(nombre)
             else:
-                messagebox.showerror("❌ Error", "Cliente no registrado. Por favor regístrate primero.")
+                messagebox.showerror("❌ Error", "Cliente no registrado. Por favor regístrate primero.") #ERROR DE DATOS
 
-        tk.Button(ventana_login, text="✨ Ingresar", command=validar_cliente,
+        tk.Button(ventana_login, text=" Ingresar", command=validar_cliente,
                   bg=COLOR_SECONDARY, fg="white", font=("Helvetica", 14, "bold"),
                   width=20, height=2, relief=tk.FLAT, cursor="hand2").pack(pady=30)
 
@@ -117,7 +122,7 @@ def ventana_iniciar_sesion():
               bg=COLOR_SECONDARY, fg="white", font=("Helvetica", 16, "bold"),
               width=15, height=2, relief=tk.FLAT, cursor="hand2").pack(side=tk.LEFT, padx=20)
 
-
+#CUANDO EL INSTRUCTOR INICIA SESION, ESTA VENTANA ES LA QUE SE LE APARECERÁ
 def panel_instructor():
     ventana = tk.Toplevel(window)
     ventana.title("👩‍🏫 Panel de Instructor")
@@ -130,24 +135,28 @@ def panel_instructor():
     tk.Label(ventana, text="👩‍🏫 Panel de Instructor 💪",
              font=("Helvetica", 24, "bold"), bg=COLOR_BG, fg=COLOR_PRIMARY).pack(pady=40)
 
+
     tk.Label(ventana, text="📋 Gestión de Clases",
              font=("Helvetica", 16), bg=COLOR_BG, fg=COLOR_DARK).pack(pady=20)
 
     frame_botones = tk.Frame(ventana, bg=COLOR_BG)
     frame_botones.pack(pady=30)
 
+#BOTON PARA AGREGAR UNA CLASE
     tk.Button(frame_botones, text="➕ Agregar una Clase",
               command=agregar_clase,
               bg=COLOR_SUCCESS, fg="white",
               font=("Helvetica", 14, "bold"),
               width=25, height=2, relief=tk.FLAT, cursor="hand2").pack(pady=15)
 
+#BOTON PARA QUITAR UNA CLASE
     tk.Button(frame_botones, text="➖ Quitar una Clase",
               command=quitar_clase,
               bg=COLOR_DANGER, fg="white",
               font=("Helvetica", 14, "bold"),
               width=25, height=2, relief=tk.FLAT, cursor="hand2").pack(pady=15)
 
+#BOTON PARA OBSERVAR LAS CLASES QUE FUERON CREADAS DESDE LA PERSPECTIVA DEL INSTRUCTOR
     tk.Button(frame_botones, text="📊 Ver Todas las Clases",
               command=ver_clases_instructor,
               bg=COLOR_INFO, fg=COLOR_DARK,
@@ -158,7 +167,7 @@ def panel_instructor():
               bg=COLOR_DARK, fg="white", font=("Helvetica", 12),
               width=20, relief=tk.FLAT, cursor="hand2").pack(pady=30)
 
-
+#FUNCION PARA AGREGAR LA CLASE
 def agregar_clase():
     ventana = tk.Toplevel(window)
     ventana.title("➕ Agregar Clase")
@@ -167,18 +176,18 @@ def agregar_clase():
     ventana.grab_set()
     ventana.configure(bg=COLOR_BG)
 
-    tk.Label(ventana, text="🧘‍♀️ Nueva Clase de Pilates ✨",
+    tk.Label(ventana, text="🧘‍♀️ Nueva Clase de Pilates ‍ ",
              font=("Helvetica", 20, "bold"), bg=COLOR_BG, fg=COLOR_PRIMARY).pack(pady=30)
 
     tk.Label(ventana, text="📝 Nombre de la clase:", bg=COLOR_BG, fg=COLOR_DARK, font=("Helvetica", 14)).pack(pady=10)
     entrada_nombre = tk.Entry(ventana, width=45, font=("Helvetica", 13), relief=tk.FLAT, bd=2)
     entrada_nombre.pack(pady=10, ipady=8)
 
-    tk.Label(ventana, text="📅 Día (ej: Lunes, Martes):", bg=COLOR_BG, fg=COLOR_DARK, font=("Helvetica", 14)).pack(pady=10)
+    tk.Label(ventana, text="📅 Día (Dias hábiles solamente):", bg=COLOR_BG, fg=COLOR_DARK, font=("Helvetica", 14)).pack(pady=10)
     entrada_dia = tk.Entry(ventana, width=45, font=("Helvetica", 13), relief=tk.FLAT, bd=2)
     entrada_dia.pack(pady=10, ipady=8)
 
-    tk.Label(ventana, text="⏰ Hora (ej: 08:00, 14:30):", bg=COLOR_BG, fg=COLOR_DARK, font=("Helvetica", 14)).pack(pady=10)
+    tk.Label(ventana, text="⏰ Hora (ej: 7:00 am a 8:00 am):", bg=COLOR_BG, fg=COLOR_DARK, font=("Helvetica", 14)).pack(pady=10)
     entrada_hora = tk.Entry(ventana, width=45, font=("Helvetica", 13), relief=tk.FLAT, bd=2)
     entrada_hora.pack(pady=10, ipady=8)
 
@@ -186,6 +195,7 @@ def agregar_clase():
     entrada_cupo = tk.Entry(ventana, width=45, font=("Helvetica", 13), relief=tk.FLAT, bd=2)
     entrada_cupo.pack(pady=10, ipady=8)
 
+#FUNCION PARA GUARDAR LA CLASE
     def guardar_clase():
         nombre = entrada_nombre.get().strip()
         dia = entrada_dia.get().strip()
@@ -209,7 +219,7 @@ def agregar_clase():
         messagebox.showinfo("✅ Éxito", f"¡Clase '{nombre}' agregada exitosamente! 🎉")
         ventana.destroy()
 
-    tk.Button(ventana, text="✨ Agregar Clase", command=guardar_clase,
+    tk.Button(ventana, text=" Agregar Clase", command=guardar_clase,
               bg=COLOR_SUCCESS, fg="white", font=("Helvetica", 14, "bold"),
               width=20, height=2, relief=tk.FLAT, cursor="hand2").pack(pady=25)
 
@@ -217,7 +227,7 @@ def agregar_clase():
               bg=COLOR_DANGER, fg="white", font=("Helvetica", 12),
               width=20, relief=tk.FLAT, cursor="hand2").pack()
 
-
+#FUNCION PARA QUITAR UNA CLASE
 def quitar_clase():
     clases = Sesion.listar()
     if not clases:
@@ -230,7 +240,7 @@ def quitar_clase():
     ventana.resizable(False, False)
     ventana.grab_set()
     ventana.configure(bg=COLOR_BG)
-
+#EJEMPLO DE PILAS (LIFO)
     tk.Label(ventana, text="🗑️ Selecciona la clase a eliminar",
              font=("Helvetica", 20, "bold"), bg=COLOR_BG, fg=COLOR_DANGER).pack(pady=30)
 
@@ -274,7 +284,7 @@ def quitar_clase():
               bg=COLOR_DARK, fg="white", font=("Helvetica", 12),
               width=20, relief=tk.FLAT, cursor="hand2").pack()
 
-
+#FUNCION PARA VER LAS CLASES REGISTRADAS
 def ver_clases_instructor():
     clases = database.Sesion.listar()
     if not clases:
@@ -288,7 +298,7 @@ def ver_clases_instructor():
     ventana.grab_set()
     ventana.configure(bg=COLOR_BG)
 
-    tk.Label(ventana, text="📋 Lista de Clases Registradas 🧘‍♀️",
+    tk.Label(ventana, text="📋 Lista de Clases Registradas ️",
              font=("Helvetica", 20, "bold"), bg=COLOR_BG, fg=COLOR_PRIMARY).pack(pady=30)
 
     frame_tabla = tk.Frame(ventana, bg=COLOR_BG)
@@ -317,7 +327,7 @@ def ver_clases_instructor():
               bg=COLOR_INFO, fg=COLOR_DARK, font=("Helvetica", 12),
               width=20, relief=tk.FLAT, cursor="hand2").pack(pady=15)
 
-
+#VENTA DEL POV DEL CLIENTE
 def panel_cliente(nombre_cliente):
     ventana = tk.Toplevel(window)
     ventana.title("👤 Panel de Cliente")
@@ -364,7 +374,7 @@ def panel_cliente(nombre_cliente):
               bg=COLOR_DARK, fg="white", font=("Helvetica", 12),
               width=20, relief=tk.FLAT, cursor="hand2").pack(pady=25)
 
-
+#FUNCION PARA QUE EL CLIENTE VEA LOS HORARIOS DISPONIBLES
 def ver_horarios_disponibles(nombre_cliente):
     if not CLASES:
         messagebox.showinfo("ℹ️ Información", "No hay clases disponibles aún")
@@ -413,7 +423,7 @@ def ver_horarios_disponibles(nombre_cliente):
               bg=COLOR_INFO, fg=COLOR_DARK, font=("Helvetica", 12),
               width=20, relief=tk.FLAT, cursor="hand2").pack(pady=15)
 
-
+# FUNCION PARA QUE EL USUARIO SE ASIGNE A UNA CLASE
 def asignarse_clase(nombre_cliente):
     if not CLASES:
         messagebox.showinfo("ℹ️ Información", "No hay clases disponibles")
@@ -453,7 +463,7 @@ def asignarse_clase(nombre_cliente):
     for clase in clases_disponibles:
         texto = f"{clase['nombre']} | {clase['dia']} {clase['hora']} | Cupos: {clase['inscritos']}/{clase['cupo_maximo']}"
         lista.insert(tk.END, texto)
-
+#FUNCION PARA QUE EL USUARIO PUEDA INSCRIBRSE
     def inscribirse():
         seleccion = lista.curselection()
         if not seleccion:
@@ -482,7 +492,7 @@ def asignarse_clase(nombre_cliente):
               bg=COLOR_DARK, fg="white", font=("Helvetica", 12),
               width=20, relief=tk.FLAT, cursor="hand2").pack()
 
-
+#FUNCION PARA QUE EL USUARIO PUEDA SALIR DE UNA CLASE
 def salirse_clase(nombre_cliente):
     if nombre_cliente not in INSCRIPCIONES or not INSCRIPCIONES[nombre_cliente]:
         messagebox.showinfo("ℹ️ Información", "No estás inscrito en ninguna clase")
@@ -514,7 +524,7 @@ def salirse_clase(nombre_cliente):
     for clase in mis_clases:
         texto = f"{clase['nombre']} | {clase['dia']} {clase['hora']}"
         lista.insert(tk.END, texto)
-
+#SALIR DE LA CLASE
     def desinscribirse():
         seleccion = lista.curselection()
         if not seleccion:
@@ -546,7 +556,7 @@ def salirse_clase(nombre_cliente):
               bg=COLOR_DARK, fg="white", font=("Helvetica", 12),
               width=20, relief=tk.FLAT, cursor="hand2").pack()
 
-
+#FUNCION PARA VER LAS CLASES ASIGNADAS POR PARTE DEL USUARIO
 def ver_mis_clases(nombre_cliente):
     if nombre_cliente not in INSCRIPCIONES or not INSCRIPCIONES[nombre_cliente]:
         messagebox.showinfo("ℹ️ Información", "No estás inscrito en ninguna clase")
@@ -589,7 +599,7 @@ def ver_mis_clases(nombre_cliente):
               bg=COLOR_PRIMARY, fg="white", font=("Helvetica", 12),
               width=20, relief=tk.FLAT, cursor="hand2").pack(pady=15)
 
-
+#VENTANA EMERGENTE AL ELEGIR REGISTRARSE
 def ventana_registrarse():
     ventana = tk.Toplevel(window)
     ventana.title("📝 Registrarse")
@@ -599,7 +609,7 @@ def ventana_registrarse():
     ventana.grab_set()
     ventana.configure(bg=COLOR_BG)
 
-    tk.Label(ventana, text="✨ Registro de Cliente 🧘‍♀️",
+    tk.Label(ventana, text=" Registro de Cliente 🧘‍♀️",
              font=("Helvetica", 20, "bold"), bg=COLOR_BG, fg=COLOR_SUCCESS).pack(pady=40)
 
     tk.Label(ventana, text="📝 Nombre completo:", bg=COLOR_BG, fg=COLOR_DARK, font=("Helvetica", 14)).pack(pady=10)
@@ -609,7 +619,7 @@ def ventana_registrarse():
     tk.Label(ventana, text="📱 Número de celular:", bg=COLOR_BG, fg=COLOR_DARK, font=("Helvetica", 14)).pack(pady=10)
     entrada_celular = tk.Entry(ventana, width=45, font=("Helvetica", 13), relief=tk.FLAT, bd=2)
     entrada_celular.pack(pady=10, ipady=8)
-
+#FUNCION PARA GUARDAR AL USUARIO
     def guardar_cliente():
         nombre = entrada_nombre.get().strip()
         celular = entrada_celular.get().strip()
@@ -636,7 +646,7 @@ def ventana_registrarse():
               width=20, relief=tk.FLAT, cursor="hand2").pack()
 
 
-# Ventana principal
+# FRAME PRINCIPAL
 window = tk.Tk()
 window.title("🧘‍♀️ DAC PILATES 💪")
 window.geometry("1920x1080")
@@ -652,7 +662,7 @@ frame_izquierdo.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=60)
 tk.Label(frame_izquierdo, text="🧘‍♀️ Bienvenido a DAC PILATES 💪",
          font=("Helvetica", 32, "bold"), bg=COLOR_BG, fg=COLOR_PRIMARY).pack(pady=100)
 
-tk.Label(frame_izquierdo, text="✨ Selecciona una opción:",
+tk.Label(frame_izquierdo, text=" Selecciona una opción:",
          font=("Helvetica", 18), bg=COLOR_BG, fg=COLOR_DARK).pack(pady=40)
 
 frame_botones = tk.Frame(frame_izquierdo, bg=COLOR_BG)
@@ -686,7 +696,7 @@ try:
     label_imagen.image = photo
     label_imagen.pack(pady=40)
 except Exception as e:
-    tk.Label(frame_derecho, text="🧘‍♀️\n\nDAC\n\nPILATES\n\n💪✨",
+    tk.Label(frame_derecho, text="🧘‍♀️\n\nDAC\n\nPILATES\n\n💪",
              font=("Helvetica", 64, "bold"),
              bg="#E8D5F2",
              fg=COLOR_PRIMARY).pack(expand=True)
