@@ -1,1 +1,1 @@
-# proyecto2-PA2.1
+# Manual de usuario gestios de asistencia GYM pilates
