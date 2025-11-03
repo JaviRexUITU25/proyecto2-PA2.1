@@ -149,10 +149,15 @@ class Inscripcion:
 
     def guardar(self):
         with self._conn() as conn:
-            conn.execute(
-                "INSERT INTO inscripciones (id_usuario, id_sesion) VALUES (?,?)",
-                (self.id_usuario, self.id_sesion)
-            )
+            cur = conn.execute("SELECT cupo FROM sesiones WHERE id_sesion = ?", (self.id_sesion,))
+            fila = cur.fetchone()
+            if fila and fila["cupo"] > 0:
+                conn.execute(
+                    "INSERT INTO inscripciones (id_usuario, id_sesion) VALUES (?, ?)",
+                    (self.id_usuario, self.id_sesion)
+                )
+                conn.commit()
+                Sesion.disminuir_cupo(self.id_sesion)
         print("Inscripción registrada con exito")
 
     @staticmethod
