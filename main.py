@@ -70,24 +70,29 @@ def ventana_iniciar_sesion():
         tk.Label(ventana_login, text="🧘‍♀️ Iniciar Sesión como Cliente",
                  font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=25)
 
-        tk.Label(ventana_login, text="Nombre:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
-        entrada_nombre = tk.Entry(ventana_login, width=35, font=("Helvetica", 11))
-        entrada_nombre.pack(pady=8)
+        tk.Label(ventana_login, text="Código:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
+        entrada_codigo = tk.Entry(ventana_login, width=35, font=("Helvetica", 11))
+        entrada_codigo.pack(pady=8)
 
-        tk.Label(ventana_login, text="Celular:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
-        entrada_celular = tk.Entry(ventana_login, width=35, font=("Helvetica", 11))
-        entrada_celular.pack(pady=8)
+        tk.Label(ventana_login, text="Teléfono:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
+        entrada_telefono = tk.Entry(ventana_login, width=35, font=("Helvetica", 11))
+        entrada_telefono.pack(pady=8)
 #VALIDAR DATOS PARA EL CLIENTE
         def validar_cliente():
-            nombre = entrada_nombre.get().strip()
-            celular = entrada_celular.get().strip()
+            codigo = entrada_codigo.get().strip()
+            telefono = entrada_telefono.get().strip()
 
-            if Usuario.verificar_usuario_existente(nombre, celular):
-                messagebox.showinfo("Inicio de sesion confirmado", f"¡Bienvenido {nombre}!")
+            if not codigo or not telefono:
+                messagebox.showwarning("Advertencia", "Completa todos los campos")
+                return
+
+            nombre = database.Usuario.obtener_por_codigo_y_telefono(codigo, telefono)
+            if nombre:
+                messagebox.showinfo("Inicio de sesión confirmado", f"¡Bienvenido {nombre}!")
                 ventana_login.destroy()
-                panel_cliente(nombre, celular)
+                panel_cliente(nombre, telefono)
             else:
-                messagebox.showerror("Error", "Cliente no registrado. Por favor regístrate primero.")
+                messagebox.showerror("Error", "Código o teléfono incorrectos.")
 
         tk.Button(ventana_login, text="Ingresar", command=validar_cliente,
                   bg="#6B9080", fg="white", font=("Helvetica", 11, "bold"),

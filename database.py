@@ -45,6 +45,16 @@ class Usuario:
             fila = cur.fetchone()
             return fila["id_usuario"] if fila else None
 
+    @staticmethod
+    def obtener_por_codigo_y_telefono(codigo, telefono):
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.execute(
+                "SELECT nombre FROM usuarios WHERE id_usuario=? AND telefono=?",
+                (codigo, telefono)
+            )
+            fila = cur.fetchone()
+            return fila["nombre"] if fila else None
 class Sesion:
     def __init__(self,nombre,dia, hora, cupo):
         self.nombre = nombre
