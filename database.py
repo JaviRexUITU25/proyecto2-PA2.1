@@ -119,6 +119,14 @@ class Sesion:
             )
             conn.commit()
 
+    @staticmethod
+    def aumentar_cupo(id_sesion):
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.execute(
+                "UPDATE sesiones SET cupo = cupo + 1 WHERE id_sesion = ?",
+                (id_sesion,)
+            )
+            conn.commit()
 class Inscripcion:
     def __init__(self,id_usuario, id_sesion):
         self.id_usuario = id_usuario
