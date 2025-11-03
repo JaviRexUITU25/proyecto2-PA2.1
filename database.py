@@ -55,6 +55,17 @@ class Usuario:
             )
             fila = cur.fetchone()
             return fila["nombre"] if fila else None
+
+    @staticmethod
+    def recuperar_codigo(nombre, telefono):
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.execute(
+                "SELECT id_usuario FROM usuarios WHERE nombre=? AND telefono=?",
+                (nombre, telefono)
+            )
+            fila = cur.fetchone()
+            return fila["id_usuario"] if fila else None
 class Sesion:
     def __init__(self,nombre,dia, hora, cupo):
         self.nombre = nombre
@@ -100,12 +111,11 @@ class Sesion:
             print(f"Sesión {id_sesion} eliminada con éxito")
 
 
-
-
 class Inscripcion:
     def __init__(self,id_usuario, id_sesion):
         self.id_usuario = id_usuario
         self.id_sesion = id_sesion
+
     def _conn(self):
         conn = sqlite3.connect(DB_NAME)
         conn.row_factory = sqlite3.Row
@@ -120,6 +130,7 @@ class Inscripcion:
         """)
         conn.commit()
         return conn
+
     def guardar(self):
         with self._conn() as conn:
             conn.execute(
@@ -127,6 +138,7 @@ class Inscripcion:
                 (self.id_usuario, self.id_sesion)
             )
         print("Inscripción registrada con exito")
+
     @staticmethod
     def listar_por_usuario(id_usuario):
         conn = sqlite3.connect(DB_NAME)

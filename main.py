@@ -16,7 +16,52 @@ def ventana_iniciar_sesion():
     tk.Label(ventana, text="🔐 ¿Cómo deseas iniciar sesión?",
              font=("Helvetica", 14, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=40)
 
-#VENTANA PARA EL INSTRUCTOR
+    def ventana_recuperar_codigo():
+        ventana = tk.Toplevel(window)
+        ventana.title("Recuperar Código de Usuario")
+        ventana.geometry("550x350")
+        ventana.resizable(False, False)
+        ventana.transient(window)
+        ventana.grab_set()
+        ventana.configure(bg="#F5F0E8")
+
+        tk.Label(ventana, text="Recuperar tu código de usuario",
+                 font=("Helvetica", 14, "bold"),  bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+
+        tk.Label(ventana, text="Nombre completo:",  bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
+        entrada_nombre = tk.Entry(ventana, width=35, font=("Helvetica", 11))
+        entrada_nombre.pack(pady=8)
+
+        tk.Label(ventana, text="Número de teléfono:",  bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
+        entrada_telefono = tk.Entry(ventana, width=35, font=("Helvetica", 11))
+        entrada_telefono.pack(pady=8)
+
+        def buscar_codigo():
+            nombre = entrada_nombre.get().strip()
+            telefono = entrada_telefono.get().strip()
+
+            if not nombre or not telefono:
+                messagebox.showwarning("Advertencia", "Completa todos los campos")
+                return
+
+            codigo = database.Usuario.recuperar_codigo(nombre, telefono)
+
+            if codigo:
+                messagebox.showinfo("Tu código de usuario",
+                                    f"{nombre} tu código de usuario es: {codigo}")
+                ventana.destroy()
+            else:
+                messagebox.showerror("Error", "No se encontró un usuario con esos datos.")
+
+        tk.Button(ventana, text="Buscar Código", command=buscar_codigo,
+                  bg="#6B9080", fg="white", font=("Helvetica", 11, "bold"),
+                  width=18, height=2, cursor="hand2").pack(pady=20)
+
+        tk.Button(ventana, text="Cancelar", command=ventana.destroy,
+                  bg="#9E9E9E", fg="white", font=("Helvetica", 10, "bold"),
+                  width=18, height=2, cursor="hand2").pack(pady=5)
+
+    #VENTANA PARA EL INSTRUCTOR
     def login_instructor():
         INSTRUCTOR_NOMBRE = "Fabiola Acevez"
         INSTRUCTOR_CELULAR = "45348967"
@@ -97,6 +142,10 @@ def ventana_iniciar_sesion():
         tk.Button(ventana_login, text="Ingresar", command=validar_cliente,
                   bg="#6B9080", fg="white", font=("Helvetica", 11, "bold"),
                   width=18, height=2, cursor="hand2").pack(pady=20)
+
+        tk.Button(ventana_login, text="¿Olvidaste tu código?", command=ventana_recuperar_codigo,
+                  bg="#9E9E9E", fg="white",font=("Helvetica", 10, "bold"),
+                  width=18, height=2, cursor="hand2").pack(pady=5)
 
     btn_frame = tk.Frame(ventana, bg="#F5F0E8")
     btn_frame.pack(pady=25)
@@ -670,7 +719,7 @@ try:
     from PIL import Image, ImageTk
 
     imagen = Image.open('Dac logo png.png')
-    imagen = imagen.resize((800, 900), Image.Resampling.LANCZOS)
+    imagen = imagen.resize((500, 500), Image.Resampling.LANCZOS)
     photo = ImageTk.PhotoImage(imagen)
 
     label_imagen = tk.Label(frame_derecho, image=photo, bg="#CCE3DE")
