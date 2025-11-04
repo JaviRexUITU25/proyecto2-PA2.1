@@ -186,10 +186,12 @@ class Inscripcion:
         conn = sqlite3.connect(DB_NAME)
         conn.row_factory = sqlite3.Row
         cur = conn.execute("""
-            SELECT sesiones.*
-            FROM inscripciones
-            INNER JOIN sesiones ON inscripciones.id_sesion = sesiones.id_sesion
-            WHERE inscripciones.id_usuario = ?
+            SELECT sesiones.id_sesion, sesiones.nombre, sesiones.cupo,
+                       horarios.dia, horarios.hora_inicio, horarios.hora_fin
+                FROM inscripciones
+                INNER JOIN sesiones ON inscripciones.id_sesion = sesiones.id_sesion
+                INNER JOIN horarios ON sesiones.id_horario = horarios.id_horario
+                WHERE inscripciones.id_usuario = ?
         """, (id_usuario,))
         return cur.fetchall()
 
@@ -263,7 +265,7 @@ def crear_tablas():
 conn = sqlite3.connect('gimnasio.db')
 cursor = conn.cursor()
 
-cursor.execute("SELECT * FROM sesiones")
+cursor.execute("SELECT *FROM sesiones")
 # conn.commit()
 # conn.close()
 data = cursor.fetchall()

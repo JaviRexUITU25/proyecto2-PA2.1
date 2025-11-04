@@ -162,7 +162,7 @@ def agregar_clase():
              bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
 
     horarios = database.Horario.listar()
-    opciones = [f"{h['id_horario']} - {h['dia']} {h['hora_inicio']} - {h['hora_fin']}" for h in horarios]
+    opciones = [f"{h['dia']} {h['hora_inicio']} - {h['hora_fin']}" for h in horarios]
 
     seleccion_horario = ttk.Combobox(ventana, values=opciones, state="readonly",
                                      font=("Helvetica", 11), width=45)
@@ -175,10 +175,10 @@ def agregar_clase():
 #FUNCION PARA GUARDAR UNA CLASE
     def guardar_clase():
         nombre = entrada_nombre.get().strip()
-        horario = seleccion_horario.get().strip()
+        horario = seleccion_horario.current()
         cupo = entrada_cupo.get().strip()
 
-        if not nombre or not horario or not cupo:
+        if not nombre or horario == -1 or not cupo:
             messagebox.showwarning("Error"," ❌ Completa todos los campos")
             return
 
@@ -186,7 +186,7 @@ def agregar_clase():
         if cupo <= 0:
             messagebox.showwarning("Error", " ❌ El cupo debe ser positivo")
             return
-        id_horario = horario.split(" - ")[0]
+        id_horario = horarios[horario]['id_horario']
 
         nueva_clase = database.Sesion(nombre,id_horario, cupo)
         nueva_clase.guardar()
@@ -230,7 +230,7 @@ def quitar_clase():
     scrollbar.config(command=lista.yview)
 
     for clase in clases:
-        texto = f"ID:{clase['id_sesion']} - {clase['nombre']} | {clase['dia']} {clase['hora']} | Cupo: {clase['cupo']}"
+        texto = f"ID:{clase['id_sesion']} - {clase['nombre']} | {clase['dia']} Hora:{clase['hora_inicio']} - {clase['hora_fin']} | Cupo: {clase['cupo']}"
         lista.insert(tk.END, texto)
 #QUITAR LA CLASE SELECCIONADA
     def eliminar_seleccionada():
@@ -432,7 +432,7 @@ def asignarse_clase(nombre_cliente, telefono_cliente):
     scrollbar.config(command=lista.yview)
 
     for clase in clases_disponibles:
-        texto = f"{clase['nombre']} | {clase['dia']} {clase['hora']} | Cupos: {clase['cupo']}"
+        texto = f"{clase['nombre']} | {clase['dia']} {clase['hora_inicio']} - {clase['hora_fin']} | Cupos: {clase['cupo']}"
         lista.insert(tk.END, texto)
 # METERSE A UNA CLASE
     def inscribirse():
@@ -489,7 +489,7 @@ def salirse_clase(nombre_cliente, telefono_cliente):
     scrollbar.config(command=lista.yview)
 
     for clase in clases:
-        texto = f"{clase['nombre']} | {clase['dia']} {clase['hora']}"
+        texto = f"{clase['nombre']} | {clase['dia']} {clase['hora_inicio']} - {clase['hora_fin']}"
         lista.insert(tk.END, texto)
 
     def desinscribirse():
@@ -551,7 +551,7 @@ def ver_mis_clases(nombre_cliente, telefono_cliente):
         info = f"{'=' * 50}\n"
         info += f"Clase: {clase['nombre']}\n"
         info += f"Día: {clase['dia']}\n"
-        info += f"Hora: {clase['hora']}\n"
+        info += f"Hora: {clase['hora_inicio']} - {clase['hora_fin']}\n"
         info += f"{'=' * 50}\n\n"
         texto.insert(tk.END, info)
 
