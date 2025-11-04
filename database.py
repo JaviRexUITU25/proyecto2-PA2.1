@@ -174,12 +174,12 @@ class Inscripcion:
 
     @staticmethod
     def eliminar_inscripcion(id_usuario, id_sesion):
-        conn = sqlite3.connect(DB_NAME)
-        conn.row_factory = sqlite3.Row
-        conn.execute(
-                "DELETE FROM inscripciones WHERe id_usuario = ? AND id_sesion = ?",
-                (id_usuario,id_sesion)
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.execute(
+                "DELETE FROM inscripciones WHERE id_usuario=? AND id_sesion=?",
+                (id_usuario, id_sesion)
             )
+        Sesion.aumentar_cupo(id_sesion)
         conn.commit()
 
     @staticmethod
