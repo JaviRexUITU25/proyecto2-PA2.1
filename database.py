@@ -5,7 +5,8 @@ class Usuario:
         self.nombre= nombre
         self.telefono = telefono
         self.tipo  = tipo
-    def _conn(self):
+    @staticmethod
+    def _conn():
         conn = sqlite3.connect(DB_NAME)
         conn.row_factory= sqlite3.Row
         conn.execute("""
@@ -149,7 +150,8 @@ class Inscripcion:
         self.id_usuario = id_usuario
         self.id_sesion = id_sesion
 
-    def _conn(self):
+    @staticmethod
+    def _conn():
         conn = sqlite3.connect(DB_NAME)
         conn.row_factory = sqlite3.Row
         conn.execute("""
@@ -214,7 +216,8 @@ class Horario:
         self.hora_inicio = hora_inicio
         self.hora_fin = hora_fin
 
-    def _conn(self):
+    @staticmethod
+    def _conn():
         conn = sqlite3.connect(DB_NAME)
         conn.row_factory = sqlite3.Row
         conn.execute("""
@@ -249,6 +252,13 @@ class Horario:
         cur = conn.execute("SELECT * FROM horarios WHERE id_horario=?", (id_horario,))
         return cur.fetchone()
 
+def crear_tablas():
+    Usuario._conn()
+    Sesion._conn()
+    Inscripcion._conn()
+    Horario._conn()
+
+crear_tablas()
 
 conn = sqlite3.connect('gimnasio.db')
 cursor = conn.cursor()
@@ -260,5 +270,4 @@ data = cursor.fetchall()
 for row in data:
     print(row)
 conn.close()
-
 

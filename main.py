@@ -1,8 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-from datetime import datetime
 import database
-from database import Usuario, Sesion
+database.crear_tablas()
 #VENTANA PARA INICIAR SESION
 def ventana_iniciar_sesion():
     ventana = tk.Toplevel(window)
@@ -189,7 +188,7 @@ def agregar_clase():
             return
         id_horario = horario.split(" - ")[0]
 
-        nueva_clase = Sesion(nombre,id_horario, cupo)
+        nueva_clase = database.Sesion(nombre,id_horario, cupo)
         nueva_clase.guardar()
         messagebox.showinfo("Éxito", f"¡Clase '{nombre}' agregada exitosamente!")
         ventana.destroy()
@@ -204,7 +203,7 @@ def agregar_clase():
 
 #FUNCION PARA QUITAR UNA CLASE
 def quitar_clase():
-    clases = Sesion.listar()
+    clases = database.Sesion.listar()
     if not clases:
         messagebox.showinfo("No hay clases registradas")
         return
@@ -247,7 +246,7 @@ def quitar_clase():
                                         f"¿Eliminar la clase '{clase['nombre']}' del día {clase['dia']}?")
 
         if respuesta:
-            Sesion.eliminar(clase['id_sesion'])
+            database.Sesion.eliminar(clase['id_sesion'])
             messagebox.showinfo("¡Exito!", "Clase eliminada exitosamente")
             ventana.destroy()
 
@@ -351,7 +350,7 @@ def panel_cliente(nombre_cliente, telefono_cliente=""):
 
 #FUNCION PARA VER LOS HORARIOS DISPONIBLES
 def ver_horarios_disponibles(nombre_cliente):
-    clases = Sesion.listar()
+    clases = database.Sesion.listar()
     if not clases:
         messagebox.showinfo("Información", "No hay clases disponibles aún")
         return
@@ -397,7 +396,7 @@ def asignarse_clase(nombre_cliente, telefono_cliente):
     if not id_usuario:
         messagebox.showerror("Error", "Usuario no encontrado")
         return
-    clases = Sesion.listar()
+    clases = database.Sesion.listar()
     if not clases:
         messagebox.showinfo("Información", "No hay clases disponibles")
         return
@@ -594,7 +593,7 @@ def ventana_registrarse():
         if database.Usuario.verificar_usuario_existente(nombre, celular):
             messagebox.showwarning("Advertencia", "El usuario ya está registrado")
             return
-        nuevo_usuario = Usuario(nombre, celular, "cliente")
+        nuevo_usuario = database.Usuario(nombre, celular, "cliente")
         nuevo_usuario.guardar()
         codigo = nuevo_usuario.obtener_id()
         if codigo:
