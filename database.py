@@ -45,6 +45,27 @@ class Usuario:
             fila = cur.fetchone()
             return fila["id_usuario"] if fila else None
 
+    @staticmethod
+    def obtener_por_codigo_y_telefono(codigo, telefono):
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.execute(
+                "SELECT nombre FROM usuarios WHERE id_usuario=? AND telefono=?",
+                (codigo, telefono)
+            )
+            fila = cur.fetchone()
+            return fila["nombre"] if fila else None
+
+    @staticmethod
+    def recuperar_codigo(nombre, telefono):
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.execute(
+                "SELECT id_usuario FROM usuarios WHERE nombre=? AND telefono=?",
+                (nombre, telefono)
+            )
+            fila = cur.fetchone()
+            return fila["id_usuario"] if fila else None
 class Sesion:
     def __init__(self,nombre,dia, hora, cupo):
         self.nombre = nombre
@@ -89,13 +110,28 @@ class Sesion:
             conn.commit()
             print(f"Sesión {id_sesion} eliminada con éxito")
 
+    @staticmethod
+    def disminuir_cupo(id_sesion):
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.execute(
+                "UPDATE sesiones SET cupo = cupo - 1 WHERE id_sesion = ? AND cupo > 0",
+                (id_sesion,)
+            )
+            conn.commit()
 
-
-
+    @staticmethod
+    def aumentar_cupo(id_sesion):
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.execute(
+                "UPDATE sesiones SET cupo = cupo + 1 WHERE id_sesion = ?",
+                (id_sesion,)
+            )
+            conn.commit()
 class Inscripcion:
     def __init__(self,id_usuario, id_sesion):
         self.id_usuario = id_usuario
         self.id_sesion = id_sesion
+
     def _conn(self):
         conn = sqlite3.connect(DB_NAME)
         conn.row_factory = sqlite3.Row
@@ -110,13 +146,20 @@ class Inscripcion:
         """)
         conn.commit()
         return conn
+
     def guardar(self):
         with self._conn() as conn:
-            conn.execute(
-                "INSERT INTO inscripciones (id_usuario, id_sesion) VALUES (?,?)",
-                (self.id_usuario, self.id_sesion)
-            )
+            cur = conn.execute("SELECT cupo FROM sesiones WHERE id_sesion = ?", (self.id_sesion,))
+            fila = cur.fetchone()
+            if fila and fila["cupo"] > 0:
+                conn.execute(
+                    "INSERT INTO inscripciones (id_usuario, id_sesion) VALUES (?, ?)",
+                    (self.id_usuario, self.id_sesion)
+                )
+                conn.commit()
+                Sesion.disminuir_cupo(self.id_sesion)
         print("Inscripción registrada con exito")
+
     @staticmethod
     def listar_por_usuario(id_usuario):
         conn = sqlite3.connect(DB_NAME)
@@ -131,12 +174,12 @@ class Inscripcion:
 
     @staticmethod
     def eliminar_inscripcion(id_usuario, id_sesion):
-        conn = sqlite3.connect(DB_NAME)
-        conn.row_factory = sqlite3.Row
-        conn.execute(
-                "DELETE FROM inscripciones WHERe id_usuario = ? AND id_sesion = ?",
-                (id_usuario,id_sesion)
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.execute(
+                "DELETE FROM inscripciones WHERE id_usuario=? AND id_sesion=?",
+                (id_usuario, id_sesion)
             )
+        Sesion.aumentar_cupo(id_sesion)
         conn.commit()
 
     @staticmethod

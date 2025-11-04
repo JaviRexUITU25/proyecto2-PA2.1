@@ -16,7 +16,52 @@ def ventana_iniciar_sesion():
     tk.Label(ventana, text="🔐 ¿Cómo deseas iniciar sesión?",
              font=("Helvetica", 14, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=40)
 
-#VENTANA PARA EL INSTRUCTOR
+    def ventana_recuperar_codigo():
+        ventana = tk.Toplevel(window)
+        ventana.title("Recuperar Código de Usuario")
+        ventana.geometry("550x350")
+        ventana.resizable(False, False)
+        ventana.transient(window)
+        ventana.grab_set()
+        ventana.configure(bg="#F5F0E8")
+
+        tk.Label(ventana, text="Recuperar tu código de usuario",
+                 font=("Helvetica", 14, "bold"),  bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+
+        tk.Label(ventana, text="Nombre completo:",  bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
+        entrada_nombre = tk.Entry(ventana, width=35, font=("Helvetica", 11))
+        entrada_nombre.pack(pady=8)
+
+        tk.Label(ventana, text="Número de teléfono:",  bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
+        entrada_telefono = tk.Entry(ventana, width=35, font=("Helvetica", 11))
+        entrada_telefono.pack(pady=8)
+
+        def buscar_codigo():
+            nombre = entrada_nombre.get().strip()
+            telefono = entrada_telefono.get().strip()
+
+            if not nombre or not telefono:
+                messagebox.showwarning("Advertencia", "Completa todos los campos")
+                return
+
+            codigo = database.Usuario.recuperar_codigo(nombre, telefono)
+
+            if codigo:
+                messagebox.showinfo("Tu código de usuario",
+                                    f"{nombre} tu código de usuario es: {codigo}")
+                ventana.destroy()
+            else:
+                messagebox.showerror("Error", "No se encontró un usuario con esos datos.")
+
+        tk.Button(ventana, text="Buscar Código", command=buscar_codigo,
+                  bg="#6B9080", fg="white", font=("Helvetica", 11, "bold"),
+                  width=18, height=2, cursor="hand2").pack(pady=20)
+
+        tk.Button(ventana, text="Cancelar", command=ventana.destroy,
+                  bg="#9E9E9E", fg="white", font=("Helvetica", 10, "bold"),
+                  width=18, height=2, cursor="hand2").pack(pady=5)
+
+    #VENTANA PARA EL INSTRUCTOR
     def login_instructor():
         INSTRUCTOR_NOMBRE = "Fabiola Acevez"
         INSTRUCTOR_CELULAR = "45348967"
@@ -70,28 +115,37 @@ def ventana_iniciar_sesion():
         tk.Label(ventana_login, text="🧘‍♀️ Iniciar Sesión como Cliente",
                  font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=25)
 
-        tk.Label(ventana_login, text="Nombre:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
-        entrada_nombre = tk.Entry(ventana_login, width=35, font=("Helvetica", 11))
-        entrada_nombre.pack(pady=8)
+        tk.Label(ventana_login, text="Código:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
+        entrada_codigo = tk.Entry(ventana_login, width=35, font=("Helvetica", 11))
+        entrada_codigo.pack(pady=8)
 
-        tk.Label(ventana_login, text="Celular:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
-        entrada_celular = tk.Entry(ventana_login, width=35, font=("Helvetica", 11))
-        entrada_celular.pack(pady=8)
+        tk.Label(ventana_login, text="Teléfono:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
+        entrada_telefono = tk.Entry(ventana_login, width=35, font=("Helvetica", 11))
+        entrada_telefono.pack(pady=8)
 #VALIDAR DATOS PARA EL CLIENTE
         def validar_cliente():
-            nombre = entrada_nombre.get().strip()
-            celular = entrada_celular.get().strip()
+            codigo = entrada_codigo.get().strip()
+            telefono = entrada_telefono.get().strip()
 
-            if Usuario.verificar_usuario_existente(nombre, celular):
-                messagebox.showinfo("Inicio de sesion confirmado", f"¡Bienvenido {nombre}!")
+            if not codigo or not telefono:
+                messagebox.showwarning("Advertencia", "Completa todos los campos")
+                return
+
+            nombre = database.Usuario.obtener_por_codigo_y_telefono(codigo, telefono)
+            if nombre:
+                messagebox.showinfo("Inicio de sesión confirmado", f"¡Bienvenido {nombre}!")
                 ventana_login.destroy()
-                panel_cliente(nombre, celular)
+                panel_cliente(nombre, telefono)
             else:
-                messagebox.showerror("Error", "Cliente no registrado. Por favor regístrate primero.")
+                messagebox.showerror("Error", "Código o teléfono incorrectos.")
 
         tk.Button(ventana_login, text="Ingresar", command=validar_cliente,
                   bg="#6B9080", fg="white", font=("Helvetica", 11, "bold"),
                   width=18, height=2, cursor="hand2").pack(pady=20)
+
+        tk.Button(ventana_login, text="¿Olvidaste tu código?", command=ventana_recuperar_codigo,
+                  bg="#9E9E9E", fg="white",font=("Helvetica", 10, "bold"),
+                  width=18, height=2, cursor="hand2").pack(pady=5)
 
     btn_frame = tk.Frame(ventana, bg="#F5F0E8")
     btn_frame.pack(pady=25)
@@ -161,13 +215,27 @@ def agregar_clase():
     entrada_nombre = tk.Entry(ventana, width=40, font=("Helvetica", 11))
     entrada_nombre.pack(pady=8)
 
-    tk.Label(ventana, text="Día (ej: Lunes, Martes):", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
-    entrada_dia = tk.Entry(ventana, width=40, font=("Helvetica", 11))
-    entrada_dia.pack(pady=8)
+    tk.Label(ventana, text="Día:", bg="#F5F0E8",fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
+    dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
+    seleccion_dia = ttk.Combobox(ventana, values=dias, state="readonly",font=("Helvetica", 11), width=37)
+    seleccion_dia.pack(pady=8)
 
-    tk.Label(ventana, text="Hora (ej: 08:00, 14:30):", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
-    entrada_hora = tk.Entry(ventana, width=40, font=("Helvetica", 11))
-    entrada_hora.pack(pady=8)
+    tk.Label(ventana, text="Hora:", bg="#F5F0E8",fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
+    seleccion_hora = ttk.Combobox(ventana, state="readonly",font=("Helvetica", 11), width=37)
+    seleccion_hora.pack(pady=8)
+
+    horarios = {
+        "Lunes": ["9:00 am - 10:00 am", "10:20 am - 11:20 am","6:00 pm - 7:00 pm", "8:00 pm - 9:00 pm"],
+        "Martes": ["6:00 am - 7:00 am", "9:00 am - 10:00 am","10:20 am - 11:20 am", "6:00 pm - 7:00 pm","8:00 pm - 9:00 pm"],
+        "Miércoles": ["6:00 am - 7:00 am", "9:00 am - 10:00 am","6:00 pm - 7:00 pm", "8:00 pm - 9:00 pm"],
+        "Jueves": ["6:00 am - 7:00 am", "9:00 am - 10:00 am","10:20 am - 11:20 am", "6:00 pm - 7:00 pm","8:00 pm - 9:00 pm"],
+        "Viernes": ["9:00 am - 10:00 am", "10:20 am - 11:20 am","6:00 pm - 7:00 pm", "8:00 pm - 9:00 pm"]
+    }
+
+    def actualizar_horas(event):
+        dia = seleccion_dia.get()
+        seleccion_hora["values"] = horarios.get(dia)
+    seleccion_dia.bind("<<ComboboxSelected>>", actualizar_horas)
 
     tk.Label(ventana, text="Cupo máximo:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
     entrada_cupo = tk.Entry(ventana, width=40, font=("Helvetica", 11))
@@ -176,8 +244,8 @@ def agregar_clase():
 #FUNCION PARA GUARDAR UNA CLASE
     def guardar_clase():
         nombre = entrada_nombre.get().strip()
-        dia = entrada_dia.get().strip()
-        hora = entrada_hora.get().strip()
+        dia = seleccion_dia.get().strip()
+        hora = seleccion_hora.get().strip()
         cupo = entrada_cupo.get().strip()
 
         if not nombre or not dia or not hora or not cupo:
@@ -665,7 +733,7 @@ try:
     from PIL import Image, ImageTk
 
     imagen = Image.open('Dac logo png.png')
-    imagen = imagen.resize((800, 900), Image.Resampling.LANCZOS)
+    imagen = imagen.resize((500, 500), Image.Resampling.LANCZOS)
     photo = ImageTk.PhotoImage(imagen)
 
     label_imagen = tk.Label(frame_derecho, image=photo, bg="#CCE3DE")
