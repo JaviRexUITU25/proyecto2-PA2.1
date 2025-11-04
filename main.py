@@ -7,14 +7,50 @@ from database import Usuario, Sesion
 def ventana_iniciar_sesion():
     ventana = tk.Toplevel(window)
     ventana.title("Iniciar Sesión")
-    ventana.geometry("550x350")
+    ventana.geometry("550x420")
     ventana.resizable(False, False)
     ventana.transient(window)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
 
-    tk.Label(ventana, text="🔐 ¿Cómo deseas iniciar sesión?",
+    tk.Label(ventana, text="🔐 Iniciar Sesión",
              font=("Helvetica", 14, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=40)
+
+    tk.Label(ventana, text="Código de Usuario:",
+             bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
+    entrada_codigo = tk.Entry(ventana, width=40, font=("Helvetica", 11))
+    entrada_codigo.pack(pady=8)
+
+    tk.Label(ventana, text="Número de Teléfono:",
+             bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
+    entrada_telefono = tk.Entry(ventana, width=40, font=("Helvetica", 11))
+    entrada_telefono.pack(pady=8)
+
+    def validar_login():
+        codigo = entrada_codigo.get().strip()
+        telefono = entrada_telefono.get().strip()
+
+        if not codigo or not telefono:
+            messagebox.showwarning("Advertencia", "Completa todos los campos")
+            return
+        usuario = database.Usuario.verificar_inicio_sesion(codigo, telefono)
+
+        if not usuario:
+            messagebox.showerror("Error", "Código o teléfono incorrectos.")
+            return
+
+        nombre = usuario["nombre"]
+        tipo = usuario["tipo"]
+        messagebox.showinfo("Bienvenido", f"¡Hola {nombre}! Iniciaste sesión como {tipo}.")
+        ventana.destroy()
+        if tipo.lower() == "instructor":
+            panel_instructor()
+        else:
+            panel_cliente(nombre, telefono)
+
+    tk.Button(ventana, text="Ingresar", command=validar_login,
+              bg="#6B9080", fg="white", font=("Helvetica", 12, "bold"),
+              width=18, height=2, cursor="hand2").pack(pady=25)
 
     def ventana_recuperar_codigo():
         ventana = tk.Toplevel(window)
@@ -61,102 +97,10 @@ def ventana_iniciar_sesion():
                   bg="#9E9E9E", fg="white", font=("Helvetica", 10, "bold"),
                   width=18, height=2, cursor="hand2").pack(pady=5)
 
-    #VENTANA PARA EL INSTRUCTOR
-    def login_instructor():
-        INSTRUCTOR_NOMBRE = "Fabiola Acevez"
-        INSTRUCTOR_CELULAR = "45348967"
-
-        ventana.destroy()
-        ventana_login = tk.Toplevel(window)
-        ventana_login.title("Login Instructor")
-        ventana_login.geometry("550x350")
-        ventana_login.resizable(False, False)
-        ventana_login.transient(window)
-        ventana_login.grab_set()
-        ventana_login.configure(bg="#F5F0E8")
-
-        tk.Label(ventana_login, text="👨‍🏫 Iniciar Sesión como Instructor",
-                 font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=25)
-
-        tk.Label(ventana_login, text="Nombre:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
-        entrada_nombre = tk.Entry(ventana_login, width=35, font=("Helvetica", 11))
-        entrada_nombre.pack(pady=8)
-
-        tk.Label(ventana_login, text="Celular:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
-        entrada_celular = tk.Entry(ventana_login, width=35, font=("Helvetica", 11))
-        entrada_celular.pack(pady=8)
-
-#VALIDAR DATOS DEL INSTRUCTOR
-        def validar_instructor():
-            nombre = entrada_nombre.get().strip()
-            celular = entrada_celular.get().strip()
-            if Usuario.verificar_usuario_existente(nombre, celular):
-                messagebox.showinfo("Éxito", f"¡Bienvenido Instructor!")
-                ventana_login.destroy()
-                panel_instructor()
-            else:
-                messagebox.showerror("Error", "Credenciales incorrectas")
-
-        tk.Button(ventana_login, text="Ingresar", command=validar_instructor,
-                  bg="#6B9080", fg="white", font=("Helvetica", 11, "bold"),
-                  width=18, height=2, cursor="hand2").pack(pady=20)
-
-#PUNTO DE VISTA PARA LOS CLIENTES
-    def login_cliente():
-        ventana.destroy()
-        ventana_login = tk.Toplevel(window)
-        ventana_login.title("Login Cliente")
-        ventana_login.geometry("550x350")
-        ventana_login.resizable(False, False)
-        ventana_login.transient(window)
-        ventana_login.grab_set()
-        ventana_login.configure(bg="#F5F0E8")
-
-        tk.Label(ventana_login, text="🧘‍♀️ Iniciar Sesión como Cliente",
-                 font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=25)
-
-        tk.Label(ventana_login, text="Código:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
-        entrada_codigo = tk.Entry(ventana_login, width=35, font=("Helvetica", 11))
-        entrada_codigo.pack(pady=8)
-
-        tk.Label(ventana_login, text="Teléfono:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
-        entrada_telefono = tk.Entry(ventana_login, width=35, font=("Helvetica", 11))
-        entrada_telefono.pack(pady=8)
-#VALIDAR DATOS PARA EL CLIENTE
-        def validar_cliente():
-            codigo = entrada_codigo.get().strip()
-            telefono = entrada_telefono.get().strip()
-
-            if not codigo or not telefono:
-                messagebox.showwarning("Advertencia", "Completa todos los campos")
-                return
-
-            nombre = database.Usuario.obtener_por_codigo_y_telefono(codigo, telefono)
-            if nombre:
-                messagebox.showinfo("Inicio de sesión confirmado", f"¡Bienvenido {nombre}!")
-                ventana_login.destroy()
-                panel_cliente(nombre, telefono)
-            else:
-                messagebox.showerror("Error", "Código o teléfono incorrectos.")
-
-        tk.Button(ventana_login, text="Ingresar", command=validar_cliente,
-                  bg="#6B9080", fg="white", font=("Helvetica", 11, "bold"),
-                  width=18, height=2, cursor="hand2").pack(pady=20)
-
-        tk.Button(ventana_login, text="¿Olvidaste tu código?", command=ventana_recuperar_codigo,
-                  bg="#9E9E9E", fg="white",font=("Helvetica", 10, "bold"),
-                  width=18, height=2, cursor="hand2").pack(pady=5)
-
-    btn_frame = tk.Frame(ventana, bg="#F5F0E8")
-    btn_frame.pack(pady=25)
-
-    tk.Button(btn_frame, text="👨‍🏫 Instructor", command=login_instructor,
-              bg="#A4C3B2", fg="white", font=("Helvetica", 12, "bold"),
-              width=14, height=2, cursor="hand2").pack(side=tk.LEFT, padx=15)
-
-    tk.Button(btn_frame, text="🧘‍♀️ Cliente", command=login_cliente,
-              bg="#CCE3DE", fg="#2C3E50", font=("Helvetica", 12, "bold"),
-              width=14, height=2, cursor="hand2").pack(side=tk.LEFT, padx=15)
+    tk.Button(ventana, text="¿Olvidaste tu código?",
+              command=ventana_recuperar_codigo,
+              bg="#9E9E9E", fg="white", font=("Helvetica", 10, "bold"),
+              width=18, height=2, cursor="hand2").pack()
 
 #PUNTO DE VISTA PARA EL INSTRUCTOR
 def panel_instructor():

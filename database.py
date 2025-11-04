@@ -35,6 +35,18 @@ class Usuario:
             )
             return cur.fetchone() is not None
 
+    @staticmethod
+    def verificar_inicio_sesion(codigo, telefono):
+        conn = sqlite3.connect(DB_NAME)
+        conn.row_factory = sqlite3.Row
+        cur = conn.execute(
+            "SELECT * FROM usuarios WHERE id_usuario=? AND telefono=?",
+            (codigo, telefono)
+        )
+        usuario = cur.fetchone()
+        conn.close()
+        return dict(usuario)
+
     def obtener_id(self):
         with sqlite3.connect(DB_NAME) as conn:
             conn.row_factory = sqlite3.Row
