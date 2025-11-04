@@ -215,13 +215,27 @@ def agregar_clase():
     entrada_nombre = tk.Entry(ventana, width=40, font=("Helvetica", 11))
     entrada_nombre.pack(pady=8)
 
-    tk.Label(ventana, text="Día (ej: Lunes, Martes):", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
-    entrada_dia = tk.Entry(ventana, width=40, font=("Helvetica", 11))
-    entrada_dia.pack(pady=8)
+    tk.Label(ventana, text="Día:", bg="#F5F0E8",fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
+    dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
+    seleccion_dia = ttk.Combobox(ventana, values=dias, state="readonly",font=("Helvetica", 11), width=37)
+    seleccion_dia.pack(pady=8)
 
-    tk.Label(ventana, text="Hora (ej: 08:00, 14:30):", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
-    entrada_hora = tk.Entry(ventana, width=40, font=("Helvetica", 11))
-    entrada_hora.pack(pady=8)
+    tk.Label(ventana, text="Hora:", bg="#F5F0E8",fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
+    seleccion_hora = ttk.Combobox(ventana, state="readonly",font=("Helvetica", 11), width=37)
+    seleccion_hora.pack(pady=8)
+
+    horarios = {
+        "Lunes": ["9:00 am - 10:00 am", "10:20 am - 11:20 am","6:00 pm - 7:00 pm", "8:00 pm - 9:00 pm"],
+        "Martes": ["6:00 am - 7:00 am", "9:00 am - 10:00 am","10:20 am - 11:20 am", "6:00 pm - 7:00 pm","8:00 pm - 9:00 pm"],
+        "Miércoles": ["6:00 am - 7:00 am", "9:00 am - 10:00 am","6:00 pm - 7:00 pm", "8:00 pm - 9:00 pm"],
+        "Jueves": ["6:00 am - 7:00 am", "9:00 am - 10:00 am","10:20 am - 11:20 am", "6:00 pm - 7:00 pm","8:00 pm - 9:00 pm"],
+        "Viernes": ["9:00 am - 10:00 am", "10:20 am - 11:20 am","6:00 pm - 7:00 pm", "8:00 pm - 9:00 pm"]
+    }
+
+    def actualizar_horas(event):
+        dia = seleccion_dia.get()
+        seleccion_hora["values"] = horarios.get(dia)
+    seleccion_dia.bind("<<ComboboxSelected>>", actualizar_horas)
 
     tk.Label(ventana, text="Cupo máximo:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
     entrada_cupo = tk.Entry(ventana, width=40, font=("Helvetica", 11))
@@ -230,8 +244,8 @@ def agregar_clase():
 #FUNCION PARA GUARDAR UNA CLASE
     def guardar_clase():
         nombre = entrada_nombre.get().strip()
-        dia = entrada_dia.get().strip()
-        hora = entrada_hora.get().strip()
+        dia = seleccion_dia.get().strip()
+        hora = seleccion_hora.get().strip()
         cupo = entrada_cupo.get().strip()
 
         if not nombre or not dia or not hora or not cupo:
