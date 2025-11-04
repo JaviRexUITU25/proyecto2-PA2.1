@@ -147,6 +147,14 @@ class Sesion:
                 (id_sesion,)
             )
             conn.commit()
+
+    @staticmethod
+    def actualizar(id_sesion, nombre, id_horario, cupo):
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.execute(
+                "UPDATE sesiones SET nombre=?, id_horario=?, cupo=? WHERE id_sesion=?",
+                (nombre, id_horario, cupo, id_sesion)
+            )
 class Inscripcion:
     def __init__(self,id_usuario, id_sesion):
         self.id_usuario = id_usuario
@@ -265,11 +273,12 @@ def crear_tablas():
 conn = sqlite3.connect('gimnasio.db')
 cursor = conn.cursor()
 
-cursor.execute("SELECT *FROM sesiones")
+cursor.execute("SELECT *FROM usuarios")
 # conn.commit()
 # conn.close()
 data = cursor.fetchall()
 for row in data:
     print(row)
 conn.close()
+
 

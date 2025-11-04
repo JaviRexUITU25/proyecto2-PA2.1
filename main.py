@@ -138,9 +138,16 @@ def panel_instructor():
               font=("Helvetica", 12, "bold"),
               width=22, height=2, cursor="hand2").pack(pady=12)
 
+    tk.Button(frame_botones, text="✏️ Actualizar Clase",
+              command=actualizar_clase,
+              bg="#F7D6E0", fg="#2C3E50",
+              font=("Helvetica", 12, "bold"),
+              width=22, height=2, cursor="hand2").pack(pady=12)
+
     tk.Button(ventana, text="🚪 Cerrar Sesión", command=ventana.destroy,
               bg="#B0B0B0", fg="white", font=("Helvetica", 11),
               width=18, cursor="hand2").pack(pady=25)
+
 
 #FUNCION PARA AGREGAR UNA CLASE
 def agregar_clase():
@@ -301,6 +308,91 @@ def ver_clases_instructor():
               bg="#A4C3B2", fg="white", font=("Helvetica", 11),
               width=18, cursor="hand2").pack(pady=15)
 
+def actualizar_clase():
+    clases = database.Sesion.listar()
+    if not clases:
+        messagebox.showinfo("Información", "No hay clases para actualizar")
+        return
+
+    ventana = tk.Toplevel(window)
+    ventana.title("Actualizar Clase")
+    ventana.geometry("700x600")
+    ventana.resizable(False, False)
+    ventana.grab_set()
+    ventana.configure(bg="#F5F0E8")
+
+    tk.Label(ventana, text="Selecciona la clase a actualizar",
+             font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+
+    lista = tk.Listbox(ventana, font=("Helvetica", 11), height=10, width=80)
+    lista.pack(pady=10)
+
+    for clase in clases:
+        texto = f"ID:{clase['id_sesion']} - {clase['nombre']} | {clase['dia']} {clase['hora_inicio']} - {clase['hora_fin']} | Cupo: {clase['cupo']}"
+        lista.insert(tk.END, texto)
+
+    def editar():
+        seleccion = lista.curselection()
+        if not seleccion:
+            messagebox.showwarning("Advertencia", "Selecciona una clase")
+            return
+        clase = clases[seleccion[0]]
+
+        ventana_editar = tk.Toplevel(ventana)
+        ventana_editar.title("Editar Clase")
+        ventana_editar.geometry("500x400")
+        ventana_editar.grab_set()
+        ventana_editar.configure(bg="#F5F0E8")
+
+        tk.Label(ventana_editar, text="Editar Clase", font=("Helvetica", 14, "bold"), bg="#F5F0E8").pack(pady=15)
+        tk.Label(ventana_editar, text="Nombre:", bg="#F5F0E8").pack()
+        entrada_nombre = tk.Entry(ventana_editar, width=40)
+        entrada_nombre.insert(0, clase['nombre'])
+        entrada_nombre.pack(pady=5)
+
+        tk.Label(ventana_editar, text="Cupo:", bg="#F5F0E8").pack()
+        entrada_cupo = tk.Entry(ventana_editar, width=40)
+        entrada_cupo.insert(0, clase['cupo'])
+        entrada_cupo.pack(pady=5)
+
+        tk.Label(ventana_editar, text="Horario:", bg="#F5F0E8").pack()
+        horarios = database.Horario.listar()
+        opciones = [f"{h['dia']} {h['hora_inicio']} - {h['hora_fin']}" for h in horarios]
+        seleccion_horario = ttk.Combobox(ventana_editar, values=opciones, state="readonly", width=37)
+        for idx, h in enumerate(horarios):
+            if h['dia'] == clase['dia'] and h['hora_inicio'] == clase['hora_inicio'] and h['hora_fin'] == clase['hora_fin']:
+                seleccion_horario.current(idx)
+                break
+        seleccion_horario.pack(pady=5)
+
+        def guardar_cambios():
+            nuevo_nombre = entrada_nombre.get().strip()
+            nuevo_cupo = entrada_cupo.get().strip()
+            idx_horario = seleccion_horario.current()
+            if not nuevo_nombre or not nuevo_cupo or idx_horario == -1:
+                messagebox.showwarning("Advertencia", "Completa todos los campos")
+                return
+            nuevo_cupo = int(nuevo_cupo)
+            if nuevo_cupo <= 0:
+                messagebox.showerror("Error", "El cupo debe ser un número positivo")
+                return
+            id_horario = horarios[idx_horario]['id_horario']
+            database.Sesion.actualizar(clase['id_sesion'], nuevo_nombre, id_horario, nuevo_cupo)
+            messagebox.showinfo("Éxito", "Clase actualizada correctamente")
+            ventana_editar.destroy()
+            ventana.destroy()
+
+        tk.Button(ventana_editar, text="Guardar Cambios", command=guardar_cambios,
+                  bg="#6B9080", fg="white", font=("Helvetica", 11, "bold"),
+                  width=18, height=2, cursor="hand2").pack(pady=20)
+
+    tk.Button(ventana, text="Editar Clase Seleccionada", command=editar,
+              bg="#F7D6E0", fg="#2C3E50", font=("Helvetica", 12, "bold"),
+              width=22, height=2, cursor="hand2").pack(pady=15)
+
+    tk.Button(ventana, text="Cancelar", command=ventana.destroy,
+              bg="#B0B0B0", fg="white", font=("Helvetica", 11),
+              width=18, cursor="hand2").pack()
 #VENTANA COMO CLIENTE
 def panel_cliente(nombre_cliente, telefono_cliente=""):
     ventana = tk.Toplevel(window)
@@ -588,6 +680,10 @@ def ventana_registrarse():
 
         if not nombre or not celular:
             messagebox.showwarning("Advertencia", "Completa todos los campos")
+            return
+
+        if not (celular.isdigit() and len(celular) == 8):
+            messagebox.showwarning("Advertencia", "El número de celular debe tener exactamente 8 dígitos")
             return
 
         if database.Usuario.verificar_usuario_existente(nombre, celular):
