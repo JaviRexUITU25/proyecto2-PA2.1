@@ -189,10 +189,15 @@ def agregar_clase():
             messagebox.showwarning("Error"," ❌ Completa todos los campos")
             return
 
-        cupo = int(cupo)
-        if cupo <= 0:
-            messagebox.showwarning("Error", " ❌ El cupo debe ser positivo")
+        try:
+            cupo = int(cupo)
+            if cupo <= 0:
+                messagebox.showwarning("Error", " ❌ El cupo debe ser positivo")
+                return
+        except ValueError:
+            messagebox.showwarning("Error", "❌ El cupo debe ser un número entero positivo")
             return
+
         id_horario = horarios[horario]['id_horario']
 
         nueva_clase = database.Sesion(nombre,id_horario, cupo)
@@ -385,6 +390,10 @@ def actualizar_clase():
         tk.Button(ventana_editar, text="Guardar Cambios", command=guardar_cambios,
                   bg="#6B9080", fg="white", font=("Helvetica", 11, "bold"),
                   width=18, height=2, cursor="hand2").pack(pady=20)
+
+        tk.Button(ventana_editar, text="Cancelar", command=ventana.destroy,
+                  bg="#B0B0B0", fg="white", font=("Helvetica", 11),
+                  width=18, cursor="hand2").pack()
 
     tk.Button(ventana, text="Editar Clase Seleccionada", command=editar,
               bg="#F7D6E0", fg="#2C3E50", font=("Helvetica", 12, "bold"),
