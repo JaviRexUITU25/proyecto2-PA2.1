@@ -744,7 +744,7 @@ tk.Label(frame_izquierdo, text="🧘‍♀️ Bienvenido a DAC PILATES",
 tk.Label(frame_izquierdo, text="BODY TRANSFORMATION",
          font=("Helvetica", 16), bg="#F5F0E8", fg="#6B9080").pack(pady=20)
 
-tk.Label(frame_izquierdo, text="Selecciona una opción para comenzar:",
+tk.Label(frame_izquierdo, text="Selecciona una opción para comenzar",
          font=("Helvetica", 14), bg="#F5F0E8", fg="#2C3E50").pack(pady=40)
 
 frame_botones = tk.Frame(frame_izquierdo, bg="#F5F0E8")
