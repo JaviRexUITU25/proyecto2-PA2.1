@@ -287,3 +287,11 @@ def guardar_horarios():
                     (dia, inicio, fin)
                 )
 #guardar_horarios()
+
+conn = sqlite3.connect('gimnasio.db')
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM usuarios")
+
+data = cursor.fetchall()
+for i in data:
+    print(i)
