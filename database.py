@@ -43,7 +43,9 @@ class Usuario:
             "SELECT * FROM usuarios WHERE id_usuario=? AND telefono=?",
             (codigo, telefono)
         )
-        return cur.fetchone() is not None
+        usuario = cur.fetchone()
+        conn.close()
+        return dict(usuario)
 
     def obtener_id(self):
         with sqlite3.connect(DB_NAME) as conn:
