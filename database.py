@@ -270,15 +270,20 @@ def crear_tablas():
     Inscripcion._conn()
     Horario._conn()
 
-conn = sqlite3.connect('gimnasio.db')
-cursor = conn.cursor()
-
-cursor.execute("SELECT *FROM usuarios")
-# conn.commit()
-# conn.close()
-data = cursor.fetchall()
-for row in data:
-    print(row)
-conn.close()
-
-
+def guardar_horarios():
+    horarios_data = {
+        "Lunes": [("09:00", "10:00"), ("10:20", "11:20"), ("18:00", "19:00"), ("20:00", "21:00")],
+        "Martes": [("06:00", "07:00"), ("09:00", "10:00"), ("10:20", "11:20"), ("18:00", "19:00"), ("20:00", "21:00")],
+        "Miércoles": [("06:00", "07:00"), ("09:00", "10:00"), ("18:00", "19:00"), ("20:00", "21:00")],
+        "Jueves": [("06:00", "07:00"), ("09:00", "10:00"), ("10:20", "11:20"), ("18:00", "19:00"), ("20:00", "21:00")],
+        "Viernes": [("09:00", "10:00"), ("10:20", "11:20"), ("18:00", "19:00"), ("20:00", "21:00")]
+    }
+    conn = sqlite3.connect(DB_NAME)
+    with conn:
+        for dia, horas in horarios_data.items():
+            for inicio, fin in horas:
+                conn.execute(
+                    "INSERT INTO horarios (dia, hora_inicio, hora_fin) VALUES (?, ?, ?)",
+                    (dia, inicio, fin)
+                )
+#guardar_horarios()

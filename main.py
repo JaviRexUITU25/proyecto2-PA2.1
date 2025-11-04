@@ -105,7 +105,7 @@ def ventana_iniciar_sesion():
 def panel_instructor():
     ventana = tk.Toplevel(window)
     ventana.title("Panel de Instructor")
-    ventana.geometry("650x550")
+    ventana.geometry("650x600")
     ventana.resizable(False, False)
     ventana.transient(window)
     ventana.grab_set()
@@ -217,7 +217,7 @@ def quitar_clase():
 
     ventana = tk.Toplevel(window)
     ventana.title("Quitar Clase")
-    ventana.geometry("650x500")
+    ventana.geometry("650x600")
     ventana.resizable(False, False)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
