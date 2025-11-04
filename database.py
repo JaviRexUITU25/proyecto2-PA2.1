@@ -79,10 +79,9 @@ class Usuario:
             fila = cur.fetchone()
             return fila["id_usuario"] if fila else None
 class Sesion:
-    def __init__(self,nombre,dia, hora, cupo):
+    def __init__(self,nombre,id_horario, cupo):
         self.nombre = nombre
-        self.dia= dia
-        self.hora = hora
+        self.id_horario = id_horario
         self.cupo = cupo
     @staticmethod
     def _conn():
@@ -92,9 +91,9 @@ class Sesion:
             CREATE TABLE IF NOT EXISTS sesiones (
                 id_sesion INTEGER PRIMARY KEY AUTOINCREMENT, 
                 nombre TEXT NOT NULL,
-                dia TEXT NOT NULL,
-                hora TEXT NOT NULL,
-                cupo INTEGER NOT NULL
+                id_horario INTEGER NOT NULL,
+                cupo INTEGER NOT NULL,
+                FOREIGN KEY (id_horario) REFERENCES horarios(id_horario)
             );
         """)
         conn.commit()
@@ -102,17 +101,23 @@ class Sesion:
     def guardar(self):
         with self._conn() as conn:
             conn.execute(
-                "INSERT INTO sesiones (nombre, dia, hora, cupo) VALUES (?,?,?,?)",
-                (self.nombre,self.dia,self.hora, self.cupo)
+                "INSERT INTO sesiones (nombre, id_horario, cupo) VALUES (?,?,?)",
+                (self.nombre,self.id_horario, self.cupo)
             )
         print("Sesión registrada con éxito")
 
     @staticmethod
     def listar():
-        with Sesion._conn() as conn:
-            conn.row_factory = sqlite3.Row
-            cur = conn.execute("SELECT * FROM sesiones")
-            return cur.fetchall()
+        conn = sqlite3.connect(DB_NAME)
+        conn.row_factory = sqlite3.Row
+        cur = conn.execute("""
+                    SELECT sesiones.id_sesion, sesiones.nombre, sesiones.cupo,
+                           horarios.dia, horarios.hora_inicio, horarios.hora_fin
+                    FROM sesiones
+                    INNER JOIN horarios 
+                    ON sesiones.id_horario = horarios.id_horario
+                """)
+        return cur.fetchall()
 
     @staticmethod
     def eliminar(id_sesion):
@@ -248,11 +253,12 @@ class Horario:
 conn = sqlite3.connect('gimnasio.db')
 cursor = conn.cursor()
 
-cursor.execute("SELECT * FROM horarios")
+cursor.execute("SELECT * FROM sesiones")
 # conn.commit()
 # conn.close()
 data = cursor.fetchall()
 for row in data:
     print(row)
 conn.close()
+
 

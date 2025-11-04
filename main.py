@@ -159,27 +159,15 @@ def agregar_clase():
     entrada_nombre = tk.Entry(ventana, width=40, font=("Helvetica", 11))
     entrada_nombre.pack(pady=8)
 
-    tk.Label(ventana, text="Día:", bg="#F5F0E8",fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
-    dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
-    seleccion_dia = ttk.Combobox(ventana, values=dias, state="readonly",font=("Helvetica", 11), width=37)
-    seleccion_dia.pack(pady=8)
+    tk.Label(ventana, text="Selecciona un horario:",
+             bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
 
-    tk.Label(ventana, text="Hora:", bg="#F5F0E8",fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
-    seleccion_hora = ttk.Combobox(ventana, state="readonly",font=("Helvetica", 11), width=37)
-    seleccion_hora.pack(pady=8)
+    horarios = database.Horario.listar()
+    opciones = [f"{h['id_horario']} - {h['dia']} {h['hora_inicio']} - {h['hora_fin']}" for h in horarios]
 
-    horarios = {
-        "Lunes": ["9:00 am - 10:00 am", "10:20 am - 11:20 am","6:00 pm - 7:00 pm", "8:00 pm - 9:00 pm"],
-        "Martes": ["6:00 am - 7:00 am", "9:00 am - 10:00 am","10:20 am - 11:20 am", "6:00 pm - 7:00 pm","8:00 pm - 9:00 pm"],
-        "Miércoles": ["6:00 am - 7:00 am", "9:00 am - 10:00 am","6:00 pm - 7:00 pm", "8:00 pm - 9:00 pm"],
-        "Jueves": ["6:00 am - 7:00 am", "9:00 am - 10:00 am","10:20 am - 11:20 am", "6:00 pm - 7:00 pm","8:00 pm - 9:00 pm"],
-        "Viernes": ["9:00 am - 10:00 am", "10:20 am - 11:20 am","6:00 pm - 7:00 pm", "8:00 pm - 9:00 pm"]
-    }
-
-    def actualizar_horas(event):
-        dia = seleccion_dia.get()
-        seleccion_hora["values"] = horarios.get(dia)
-    seleccion_dia.bind("<<ComboboxSelected>>", actualizar_horas)
+    seleccion_horario = ttk.Combobox(ventana, values=opciones, state="readonly",
+                                     font=("Helvetica", 11), width=45)
+    seleccion_horario.pack(pady=8)
 
     tk.Label(ventana, text="Cupo máximo:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
     entrada_cupo = tk.Entry(ventana, width=40, font=("Helvetica", 11))
@@ -188,23 +176,20 @@ def agregar_clase():
 #FUNCION PARA GUARDAR UNA CLASE
     def guardar_clase():
         nombre = entrada_nombre.get().strip()
-        dia = seleccion_dia.get().strip()
-        hora = seleccion_hora.get().strip()
+        horario = seleccion_horario.get().strip()
         cupo = entrada_cupo.get().strip()
 
-        if not nombre or not dia or not hora or not cupo:
+        if not nombre or not horario or not cupo:
             messagebox.showwarning("Error"," ❌ Completa todos los campos")
             return
 
-        try:
-            cupo = int(cupo)
-            if cupo <= 0:
-                raise ValueError
-        except:
-            messagebox.showerror("El cupo debe ser un número positivo")
+        cupo = int(cupo)
+        if cupo <= 0:
+            messagebox.showwarning("Error", " ❌ El cupo debe ser positivo")
             return
+        id_horario = horario.split(" - ")[0]
 
-        nueva_clase = Sesion(nombre, dia, hora, cupo)
+        nueva_clase = Sesion(nombre,id_horario, cupo)
         nueva_clase.guardar()
         messagebox.showinfo("Éxito", f"¡Clase '{nombre}' agregada exitosamente!")
         ventana.destroy()
@@ -306,7 +291,7 @@ def ver_clases_instructor():
         info = f"{'=' * 60}\n"
         info += f"ID: {clase['id_sesion']}\n"
         info += f"Nombre: {clase['nombre']}\n"
-        info += f"Día: {clase['dia']} | Hora: {clase['hora']}\n"
+        info += f"Día: {clase['dia']} | Hora:{clase['hora_inicio']} - {clase['hora_fin']}\n"
         info += f"Cupo: {clase['cupo']}\n"
         info += f"{'=' * 60}\n\n"
         texto.insert(tk.END, info)
@@ -395,7 +380,7 @@ def ver_horarios_disponibles(nombre_cliente):
     for clase in clases:
         info = f"{'=' * 60}\n"
         info += f"Clase: {clase['nombre']}\n"
-        info += f"Día: {clase['dia']} | Hora: {clase['hora']}\n"
+        info += f"Día: {clase['dia']} | Hora: {clase['hora_inicio']} - {clase['hora_fin']}\n"
         info += f"Cupo: {clase['cupo']}\n"
         info += f"{'=' * 60}\n\n"
         texto.insert(tk.END, info)
