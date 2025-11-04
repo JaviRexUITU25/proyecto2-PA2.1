@@ -249,7 +249,7 @@ def agregar_clase():
         cupo = entrada_cupo.get().strip()
 
         if not nombre or not dia or not hora or not cupo:
-            messagebox.showwarning("Completa todos los campos")
+            messagebox.showwarning("Error"," ❌ Completa todos los campos")
             return
 
         try:
