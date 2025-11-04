@@ -203,12 +203,52 @@ class Inscripcion:
             fila = cur.fetchone()
             return fila["id_usuario"] if fila else None
 
+class Horario:
+    def __init__(self, dia, hora_inicio, hora_fin):
+        self.dia = dia
+        self.hora_inicio = hora_inicio
+        self.hora_fin = hora_fin
+
+    def _conn(self):
+        conn = sqlite3.connect(DB_NAME)
+        conn.row_factory = sqlite3.Row
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS horarios (
+                id_horario INTEGER PRIMARY KEY AUTOINCREMENT,
+                dia TEXT NOT NULL,
+                hora_inicio TEXT NOT NULL,
+                hora_fin TEXT NOT NULL
+            )
+        """)
+        conn.commit()
+        return conn
+    def guardar(self):
+        conn = sqlite3.connect(DB_NAME)
+        with conn:
+            conn.execute(
+                "INSERT INTO horarios (dia, hora_inicio, hora_fin) VALUES (?, ?, ?)",
+                (self.dia, self.hora_inicio, self.hora_fin)
+            )
+
+    @staticmethod
+    def listar():
+        conn = sqlite3.connect(DB_NAME)
+        conn.row_factory = sqlite3.Row
+        cur = conn.execute("SELECT * FROM horarios")
+        return cur.fetchall()
+
+    @staticmethod
+    def obtener(id_horario):
+        conn = sqlite3.connect(DB_NAME)
+        conn.row_factory = sqlite3.Row
+        cur = conn.execute("SELECT * FROM horarios WHERE id_horario=?", (id_horario,))
+        return cur.fetchone()
 
 
 conn = sqlite3.connect('gimnasio.db')
 cursor = conn.cursor()
 
-cursor.execute("SELECT * FROM usuarios")
+cursor.execute("SELECT * FROM horarios")
 # conn.commit()
 # conn.close()
 data = cursor.fetchall()
