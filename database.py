@@ -45,8 +45,10 @@ class Usuario:
             (codigo, telefono)
         )
         usuario = cur.fetchone()
-        conn.close()
-        return dict(usuario)
+        if usuario:
+            return dict(usuario)
+        else:
+            return None
 
     def obtener_id(self):
         with sqlite3.connect(DB_NAME) as conn:
@@ -257,8 +259,6 @@ def crear_tablas():
     Sesion._conn()
     Inscripcion._conn()
     Horario._conn()
-
-crear_tablas()
 
 conn = sqlite3.connect('gimnasio.db')
 cursor = conn.cursor()
