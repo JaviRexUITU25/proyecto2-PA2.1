@@ -377,10 +377,15 @@ def actualizar_clase():
             if not nuevo_nombre or not nuevo_cupo or idx_horario == -1:
                 messagebox.showwarning("Advertencia", "Completa todos los campos")
                 return
-            nuevo_cupo = int(nuevo_cupo)
-            if nuevo_cupo <= 0:
-                messagebox.showerror("Error", "El cupo debe ser un número positivo")
+            try:
+                nuevo_cupo = int(nuevo_cupo)
+                if nuevo_cupo <= 0:
+                    messagebox.showerror("Error", " ❌ El cupo debe ser un número positivo")
+                    return
+            except ValueError:
+                messagebox.showerror("Error", "❌ El cupo debe ser un número entero positivo")
                 return
+
             id_horario = horarios[idx_horario]['id_horario']
             database.Sesion.actualizar(clase['id_sesion'], nuevo_nombre, id_horario, nuevo_cupo)
             messagebox.showinfo("Éxito", "Clase actualizada correctamente")
