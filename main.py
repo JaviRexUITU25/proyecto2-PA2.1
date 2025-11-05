@@ -414,15 +414,66 @@ def actualizar_clase():
               bg="#B0B0B0", fg="white", font=("Helvetica", 11),
               width=18, cursor="hand2").pack()
 
+from datetime import date
+
 def registrar_asistencia():
+    sesiones = database.Sesion.listar()
+    if not sesiones:
+        messagebox.showinfo("Información", "No hay clases registradas")
+        return
+
     ventana = tk.Toplevel(window)
     ventana.title("Registrar Asistencia")
-    ventana.geometry("600x550")
+    ventana.geometry("650x600")
     ventana.configure(bg="#F5F0E8")
     ventana.grab_set()
 
-    tk.Label(ventana, text="📋 Registrar Asistencia",
-             font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+    tk.Label(ventana, text="Selecciona la clase:", bg="#F5F0E8").pack(pady=10)
+    nombres_clases = [f"{s['nombre']} | {s['dia']} {s['hora_inicio']}-{s['hora_fin']} | {s['cupo']}" for s in sesiones]
+    combo_clase = ttk.Combobox(ventana, values=nombres_clases, state="readonly", width=40)
+    combo_clase.pack(pady=5)
+
+    lista_usuarios = tk.Listbox(ventana, selectmode=tk.MULTIPLE, width=50)
+    lista_usuarios.pack(pady=15)
+
+    def cargar_usuarios(event=None):
+        lista_usuarios.delete(0, tk.END)
+        idx_clase = combo_clase.current()
+        if idx_clase == -1:
+            return
+        id_sesion = sesiones[idx_clase]['id_sesion']
+        inscritos = database.Inscripcion.listar_por_sesion(id_sesion)
+        for usuario in inscritos:
+            lista_usuarios.insert(tk.END, f"{usuario['nombre']} ({usuario['telefono']})")
+
+    combo_clase.bind("<<ComboboxSelected>>", cargar_usuarios)
+
+    def guardar_asistencia():
+        idx_clase = combo_clase.current()
+        if idx_clase == -1:
+            messagebox.showwarning("Advertencia", "Selecciona una clase")
+            return
+        seleccionados = lista_usuarios.curselection()
+        if not seleccionados:
+            messagebox.showwarning("Advertencia", "Selecciona al menos un usuario")
+            return
+        id_sesion = sesiones[idx_clase]['id_sesion']
+        inscritos = database.Inscripcion.listar_por_sesion(id_sesion)
+        fecha = date.today().isoformat()
+        for idx in seleccionados:
+            id_usuario = inscritos[idx]['id_usuario']
+            asistencia = database.Asistencia(id_usuario, id_sesion, fecha, 1)
+            asistencia.guardar()
+        messagebox.showinfo("Éxito", "¡Asistencia registrada!")
+        ventana.destroy()
+
+    tk.Button(ventana, text="Registrar Asistencia", command=guardar_asistencia,
+              bg="#6B9080", fg="white", font=("Helvetica", 12, "bold"),
+              width=20, height=2, cursor="hand2").pack(pady=10)
+
+    tk.Button(ventana, text="Cancelar", command=ventana.destroy,
+              bg="#EAA4A4", fg="white", font=("Helvetica", 11),
+              width=18, cursor="hand2").pack()
 
 
 #VENTANA COMO CLIENTE
