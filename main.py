@@ -105,7 +105,7 @@ def ventana_iniciar_sesion():
 def panel_instructor():
     ventana = tk.Toplevel(window)
     ventana.title("Panel de Instructor")
-    ventana.geometry("650x600")
+    ventana.geometry("750x700")
     ventana.resizable(False, False)
     ventana.transient(window)
     ventana.grab_set()
@@ -144,7 +144,13 @@ def panel_instructor():
               font=("Helvetica", 12, "bold"),
               width=22, height=2, cursor="hand2").pack(pady=12)
 
-    tk.Button(ventana, text="🚪 Cerrar Sesión", command=ventana.destroy,
+    tk.Button(frame_botones, text="📋 Registrar Asistencia",
+              command=registrar_asistencia,
+              bg="#6B9080", fg="white",
+              font=("Helvetica", 12, "bold"),
+              width=22,height=2, cursor="hand2").pack(pady=12)
+
+    tk.Button(frame_botones, text="🚪 Cerrar Sesión", command=ventana.destroy,
               bg="#B0B0B0", fg="white", font=("Helvetica", 11),
               width=18, cursor="hand2").pack(pady=25)
 
@@ -407,6 +413,18 @@ def actualizar_clase():
     tk.Button(ventana, text="Cancelar", command=ventana.destroy,
               bg="#B0B0B0", fg="white", font=("Helvetica", 11),
               width=18, cursor="hand2").pack()
+
+def registrar_asistencia():
+    ventana = tk.Toplevel(window)
+    ventana.title("Registrar Asistencia")
+    ventana.geometry("600x550")
+    ventana.configure(bg="#F5F0E8")
+    ventana.grab_set()
+
+    tk.Label(ventana, text="📋 Registrar Asistencia",
+             font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+
+
 #VENTANA COMO CLIENTE
 def panel_cliente(nombre_cliente, telefono_cliente=""):
     ventana = tk.Toplevel(window)

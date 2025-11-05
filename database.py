@@ -264,6 +264,31 @@ class Horario:
         cur = conn.execute("SELECT * FROM horarios WHERE id_horario=?", (id_horario,))
         return cur.fetchone()
 
+class Asistencia:
+    def __init__(self, id_usuario, id_sesion, fecha, presente):
+        self.id_usuario = id_usuario
+        self.id_sesion = id_sesion
+        self.fecha = fecha
+        self.presente = presente
+
+    @staticmethod
+    def _conn():
+        conn = sqlite3.connect(DB_NAME)
+        conn.row_factory = sqlite3.Row
+        conn.execute("""
+                    CREATE TABLE IF NOT EXISTS asistencias (
+                        id_asistencia INTEGER PRIMARY KEY AUTOINCREMENT,
+                        id_usuario INTEGER NOT NULL,
+                        id_sesion INTEGER NOT NULL,
+                        fecha TEXT NOT NULL,
+                        presente INTEGER NOT NULL,
+                        FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
+                        FOREIGN KEY (id_sesion) REFERENCES sesiones(id_sesion)
+                    )
+                """)
+        conn.commit()
+        return conn
+
 def crear_tablas():
     Usuario._conn()
     Sesion._conn()
