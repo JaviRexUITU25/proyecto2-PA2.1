@@ -222,6 +222,18 @@ class Inscripcion:
             fila = cur.fetchone()
             return fila["id_usuario"] if fila else None
 
+    @staticmethod
+    def listar_por_sesion(id_sesion):
+        import sqlite3
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.execute("""
+                    SELECT usuarios.id_usuario, usuarios.nombre, usuarios.telefono
+                    FROM inscripciones
+                    INNER JOIN usuarios ON inscripciones.id_usuario = usuarios.id_usuario
+                    WHERE inscripciones.id_sesion = ?
+                """, (id_sesion,))
+            return [dict(row) for row in cur.fetchall()]
 class Horario:
     def __init__(self, dia, hora_inicio, hora_fin):
         self.dia = dia
@@ -281,7 +293,7 @@ class Asistencia:
                         id_usuario INTEGER NOT NULL,
                         id_sesion INTEGER NOT NULL,
                         fecha TEXT NOT NULL,
-                        presente INTEGER NOT NULL,
+                        presente INTEGER NOT NULL DEFAULT 1,
                         FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
                         FOREIGN KEY (id_sesion) REFERENCES sesiones(id_sesion)
                     )
@@ -289,11 +301,28 @@ class Asistencia:
         conn.commit()
         return conn
 
+    def guardar(self):
+        conn = sqlite3.connect(DB_NAME)
+        with conn:
+            conn.execute(
+                "INSERT INTO asistencias (id_usuario, id_sesion, fecha, presente) VALUES (?, ?, ?, ?)",
+                (self.id_usuario, self.id_sesion, self.fecha, 1)
+            )
+
+    @staticmethod
+    def listar_por_sesion(id_sesion):
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.execute("""
+                    SELECT * FROM asistencias WHERE id_sesion = ?
+                """, (id_sesion,))
+            return [dict(row) for row in cur.fetchall()]
 def crear_tablas():
     Usuario._conn()
     Sesion._conn()
     Inscripcion._conn()
     Horario._conn()
+    Asistencia._conn()
 
 def guardar_horarios():
     horarios_data = {
@@ -321,5 +350,3 @@ data = cursor.fetchall()
 for row in data:
     print(row)
 conn.close()
-
-
