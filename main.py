@@ -534,10 +534,12 @@ def asignarse_clase(nombre_cliente, telefono_cliente):
             return
 
         clase = clases_disponibles[seleccion[0]]
-        nueva = database.Inscripcion(id_usuario, clase["id_sesion"])
-        nueva.guardar()
-
-        messagebox.showinfo("Éxito", f"¡Te has inscrito a '{clase['nombre']}'!")
+        inscripcion = database.Inscripcion(id_usuario, clase["id_sesion"])
+        resultado = inscripcion.guardar()
+        if resultado == "inscrito":
+            messagebox.showinfo("Éxito", f"¡Te has inscrito a '{clase['nombre']}'!")
+        elif resultado == "sin_cupo":
+            messagebox.showwarning("Sin cupo", "No hay cupos disponibles para esta clase")
         ventana.destroy()
 
     tk.Button(ventana, text="✅ Inscribirme", command=inscribirse,

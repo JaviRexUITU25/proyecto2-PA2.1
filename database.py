@@ -1,4 +1,6 @@
 import sqlite3
+from idlelib.autocomplete_w import HIDE_FOCUS_OUT_SEQUENCE
+
 DB_NAME = "gimnasio.db"
 class Usuario:
     def __init__(self,nombre,telefono,tipo):
@@ -178,16 +180,20 @@ class Inscripcion:
 
     def guardar(self):
         with self._conn() as conn:
-            cur = conn.execute("SELECT cupo FROM sesiones WHERE id_sesion = ?", (self.id_sesion,))
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT cupo FROM sesiones WHERE id_sesion = ?", (self.id_sesion,))
             fila = cur.fetchone()
-            if fila and fila["cupo"] > 0:
-                conn.execute(
-                    "INSERT INTO inscripciones (id_usuario, id_sesion) VALUES (?, ?)",
-                    (self.id_usuario, self.id_sesion)
-                )
-                conn.commit()
-                Sesion.disminuir_cupo(self.id_sesion)
-        print("Inscripción registrada con exito")
+            if fila["cupo"] <= 0:
+                return "sin_cupo"
+            cur.execute("""
+                INSERT INTO inscripciones (id_usuario, id_sesion)
+                VALUES (?, ?)
+            """, (self.id_usuario, self.id_sesion))
+            conn.commit()
+            Sesion.disminuir_cupo(self.id_sesion)
+            print("Inscripción registrada con exito")
+            return "inscrito"
 
     @staticmethod
     def listar_por_usuario(id_usuario):
@@ -270,12 +276,37 @@ def crear_tablas():
     Inscripcion._conn()
     Horario._conn()
 
+class Asistencia:
+    def __init__(self, id_sesion, id_inscripcion):
+        self.id_sesion = id_sesion
+        self.id_inscripcion = id_inscripcion
+
+    @staticmethod
+    def _conn():
+        conn = sqlite3.connect(DB_NAME)
+        conn.row_factory = sqlite3.Row
+        conn.execute("""
+                    CREATE TABLE IF NOT EXISTS asistencia (
+                    id_asistencia INTEGER PRIMARY KEY AUTOINCREMENT, 
+                    id_sesion INTEGER NOT NULL,
+                    id_inscripcion INTEGER NOT NULL, 
+                    FOREIGN KEY(id_sesion) REFERENCES sesiones(id_sesion),
+                    FOREIGN KEY(id_inscripcion) REFERENCES inscripciones(id_inscripcion)
+                    );
+                """)
+        conn.commit()
+
+    def guardar(self):
+        pass
+
+    def listar(self):
+        pass
+        return conn
+
 conn = sqlite3.connect('gimnasio.db')
 cursor = conn.cursor()
 
 cursor.execute("SELECT *FROM usuarios")
-# conn.commit()
-# conn.close()
 data = cursor.fetchall()
 for row in data:
     print(row)
