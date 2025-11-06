@@ -189,8 +189,6 @@ class Inscripcion:
                 Sesion.disminuir_cupo(self.id_sesion)
                 print("Inscripción registrada con exito")
                 return "inscrito"
-            else:
-                return "sin_cupo"
 
 
     @staticmethod
@@ -321,6 +319,7 @@ class Asistencia:
                     SELECT * FROM asistencias WHERE id_sesion = ?
                 """, (id_sesion,))
             return [dict(row) for row in cur.fetchall()]
+
 def crear_tablas():
     Usuario._conn()
     Sesion._conn()

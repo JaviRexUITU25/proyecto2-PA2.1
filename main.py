@@ -324,7 +324,6 @@ def ver_clases_instructor():
             return
         asistencias = database.Asistencia.listar_por_sesion(id_sesion)
 
-        # Crear un set de id_usuario que asistieron (puedes filtrar por fecha si lo deseas)
         presentes = set(a['id_usuario'] for a in asistencias if a['presente'])
 
         ventana_inscritos = tk.Toplevel(ventana)
@@ -620,7 +619,7 @@ def asignarse_clase(nombre_cliente, telefono_cliente):
     clases_inscritas = database.Inscripcion.listar_por_usuario(id_usuario)
     id_sesiones_inscritas = [c["id_sesion"] for c in clases_inscritas]
 
-    clases_disponibles = [c for c in clases if c["id_sesion"] not in id_sesiones_inscritas]
+    clases_disponibles = [c for c in clases if c["id_sesion"] not in id_sesiones_inscritas and c["cupo"] > 0]
 
     if not clases_disponibles:
         messagebox.showinfo("Información", "Ya estás inscrito en todas las clases disponibles")
@@ -662,8 +661,6 @@ def asignarse_clase(nombre_cliente, telefono_cliente):
         resultado = inscripcion.guardar()
         if resultado == "inscrito":
             messagebox.showinfo("Éxito", f"¡Te has inscrito a '{clase['nombre']}'!")
-        elif resultado == "sin_cupo":
-            messagebox.showwarning("Sin cupo", "No hay cupos disponibles para esta clase")
         ventana.destroy()
 
     tk.Button(ventana, text="✅ Inscribirme", command=inscribirse,
