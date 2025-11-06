@@ -2,28 +2,75 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 import database
 database.crear_tablas()
+
+
+def agregar_fondo(ventana, ruta_imagen):
+    """Función para agregar imagen de fondo a una ventana"""
+    try:
+        from PIL import Image, ImageTk
+        imagen = Image.open(ruta_imagen)
+        # Obtener dimensiones de la ventana
+        ventana.update()
+        ancho = ventana.winfo_width()
+        alto = ventana.winfo_height()
+        imagen = imagen.resize((ancho, alto), Image.Resampling.LANCZOS)
+        photo = ImageTk.PhotoImage(imagen)
+
+        label_fondo = tk.Label(ventana, image=photo)
+        label_fondo.image = photo
+        label_fondo.place(x=0, y=0, relwidth=1, relheight=1)
+        label_fondo.lower()  # Envía el fondo al fondo
+        return label_fondo
+    except Exception as e:
+        print(f"No se pudo cargar la imagen de fondo: {e}")
+        return None
+
+
+def agregar_overlay(ventana, color="#F5F0E8", alpha=150):
+    """Agrega una capa semitransparente sobre el fondo para mejor legibilidad"""
+    try:
+        from PIL import Image, ImageTk
+        ventana.update()
+        ancho = ventana.winfo_width()
+        alto = ventana.winfo_height()
+
+        # Crear imagen semitransparente
+        overlay = Image.new('RGBA', (ancho, alto), color + f'{alpha:02x}')
+        photo = ImageTk.PhotoImage(overlay)
+
+        label_overlay = tk.Label(ventana, image=photo)
+        label_overlay.image = photo
+        label_overlay.place(x=0, y=0, relwidth=1, relheight=1)
+        label_overlay.lower()
+
+        return label_overlay
+    except Exception as e:
+        print(f"No se pudo crear el overlay: {e}")
+        return None
 #VENTANA PARA INICIAR SESION
 def ventana_iniciar_sesion():
     ventana = tk.Toplevel(window)
     ventana.title("Iniciar Sesión")
-    ventana.geometry("550x420")
+    ventana.geometry("1920x1080")  # CAMBIAR DE "550x420" A "1920x1080"
     ventana.resizable(False, False)
     ventana.transient(window)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
+    agregar_fondo(ventana, 'sala_inicio_sesion.png')
+    agregar_overlay(ventana, color="#F5F0E8", alpha=150)
 
     tk.Label(ventana, text="🔐 Iniciar Sesión",
-             font=("Helvetica", 14, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=40)
+             font=("Helvetica", 32, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=80)  # CAMBIAR font de 14 a 32, pady de 40 a 80
 
     tk.Label(ventana, text="Código de Usuario:",
-             bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
-    entrada_codigo = tk.Entry(ventana, width=40, font=("Helvetica", 11))
-    entrada_codigo.pack(pady=8)
+             bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 20)).pack(pady=15)  # CAMBIAR font de 11 a 20, pady de 5 a 15
+    entrada_codigo = tk.Entry(ventana, width=50, font=("Helvetica", 18))  # CAMBIAR width de 40 a 50, font de 11 a 18
+    entrada_codigo.pack(pady=15)  # CAMBIAR pady de 8 a 15
 
     tk.Label(ventana, text="Número de Teléfono:",
-             bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
-    entrada_telefono = tk.Entry(ventana, width=40, font=("Helvetica", 11))
-    entrada_telefono.pack(pady=8)
+             bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 20)).pack(pady=15)  # CAMBIAR font de 11 a 20, pady de 5 a 15
+    entrada_telefono = tk.Entry(ventana, width=50, font=("Helvetica", 18))  # CAMBIAR width de 40 a 50, font de 11 a 18
+    entrada_telefono.pack(pady=15)
 
     def validar_login():
         codigo = entrada_codigo.get().strip()
@@ -48,28 +95,33 @@ def ventana_iniciar_sesion():
             panel_cliente(nombre, telefono)
 
     tk.Button(ventana, text="Ingresar", command=validar_login,
-              bg="#6B9080", fg="white", font=("Helvetica", 12, "bold"),
-              width=18, height=2, cursor="hand2").pack(pady=25)
+              bg="#6B9080", fg="white", font=("Helvetica", 18, "bold"),  # CAMBIAR font de 12 a 18
+              width=22, height=3, cursor="hand2").pack(pady=50)
+
+    tk.Button(ventana, text="Cancelar", command=ventana.destroy,
+              bg="#EAA4A4", fg="white", font=("Helvetica", 16),  # CAMBIAR font de 11 a 16
+              width=22, height=2, cursor="hand2").pack()
+
 
     def ventana_recuperar_codigo():
         ventana = tk.Toplevel(window)
         ventana.title("Recuperar Código de Usuario")
-        ventana.geometry("550x350")
+        ventana.geometry("750x500")  # CAMBIAR DE "550x350" A "750x500"
         ventana.resizable(False, False)
         ventana.transient(window)
         ventana.grab_set()
         ventana.configure(bg="#F5F0E8")
 
         tk.Label(ventana, text="Recuperar tu código de usuario",
-                 font=("Helvetica", 14, "bold"),  bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+                 font=("Helvetica", 20, "bold"),  bg="#F5F0E8", fg="#2C3E50").pack(pady=30)  # CAMBIAR font de 14 a 20, pady de 20 a 30
 
-        tk.Label(ventana, text="Nombre completo:",  bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
-        entrada_nombre = tk.Entry(ventana, width=35, font=("Helvetica", 11))
-        entrada_nombre.pack(pady=8)
+        tk.Label(ventana, text="Nombre completo:",  bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 14)).pack(pady=10)  # CAMBIAR font de 11 a 14, pady de 5 a 10
+        entrada_nombre = tk.Entry(ventana, width=40, font=("Helvetica", 14))  # CAMBIAR width de 35 a 40, font de 11 a 14
+        entrada_nombre.pack(pady=10)  # CAMBIAR pady de 8 a 10
 
-        tk.Label(ventana, text="Número de teléfono:",  bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=5)
-        entrada_telefono = tk.Entry(ventana, width=35, font=("Helvetica", 11))
-        entrada_telefono.pack(pady=8)
+        tk.Label(ventana, text="Número de teléfono:",  bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 14)).pack(pady=10)  # CAMBIAR font de 11 a 14, pady de 5 a 10
+        entrada_telefono = tk.Entry(ventana, width=40, font=("Helvetica", 14))  # CAMBIAR width de 35 a 40, font de 11 a 14
+        entrada_telefono.pack(pady=10)  # CAMBIAR pady de 8 a 10
 
         def buscar_codigo():
             nombre = entrada_nombre.get().strip()
@@ -89,101 +141,101 @@ def ventana_iniciar_sesion():
                 messagebox.showerror("Error", "No se encontró un usuario con esos datos.")
 
         tk.Button(ventana, text="Buscar Código", command=buscar_codigo,
-                  bg="#6B9080", fg="white", font=("Helvetica", 11, "bold"),
-                  width=18, height=2, cursor="hand2").pack(pady=20)
+                  bg="#6B9080", fg="white", font=("Helvetica", 14, "bold"),  # CAMBIAR font de 11 a 14
+                  width=20, height=2, cursor="hand2").pack(pady=25)  # CAMBIAR width de 18 a 20, pady de 20 a 25
 
         tk.Button(ventana, text="Cancelar", command=ventana.destroy,
-                  bg="#9E9E9E", fg="white", font=("Helvetica", 10, "bold"),
-                  width=18, height=2, cursor="hand2").pack(pady=5)
+                  bg="#9E9E9E", fg="white", font=("Helvetica", 13, "bold"),  # CAMBIAR font de 10 a 13
+                  width=20, height=2, cursor="hand2").pack(pady=10)  # CAMBIAR width de 18 a 20, pady de 5 a 10
 
     tk.Button(ventana, text="¿Olvidaste tu código?",
               command=ventana_recuperar_codigo,
-              bg="#9E9E9E", fg="white", font=("Helvetica", 10, "bold"),
-              width=18, height=2, cursor="hand2").pack()
+              bg="#9E9E9E", fg="white", font=("Helvetica", 16, "bold"),  # CAMBIAR font de 10 a 16
+              width=22, height=3, cursor="hand2").pack()
 
 #PUNTO DE VISTA PARA EL INSTRUCTOR
 def panel_instructor():
     ventana = tk.Toplevel(window)
     ventana.title("Panel de Instructor")
-    ventana.geometry("750x700")
+    ventana.geometry("1280x720")
     ventana.resizable(False, False)
     ventana.transient(window)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
 
     tk.Label(ventana, text="📋 Panel de Instructor",
-             font=("Helvetica", 18, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=30)
+             font=("Helvetica", 24, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=40)  # CAMBIAR font de 18 a 24, pady de 30 a 40
 
     tk.Label(ventana, text="Gestión de Clases",
-             font=("Helvetica", 13), bg="#F5F0E8", fg="#6B9080").pack(pady=15)
+             font=("Helvetica", 16), bg="#F5F0E8", fg="#6B9080").pack(pady=20)  # CAMBIAR font de 13 a 16, pady de 15 a 20
 
     frame_botones = tk.Frame(ventana, bg="#F5F0E8")
-    frame_botones.pack(pady=25)
+    frame_botones.pack(pady=30)  # CAMBIAR pady de 25 a 30
 
     tk.Button(frame_botones, text="➕ Agregar una Clase",
               command=agregar_clase,
               bg="#6B9080", fg="white",
-              font=("Helvetica", 12, "bold"),
-              width=22, height=2, cursor="hand2").pack(pady=12)
+              font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=25, height=2, cursor="hand2").pack(pady=12)  # CAMBIAR width de 22 a 25
 
     tk.Button(frame_botones, text="➖ Quitar una Clase",
               command=quitar_clase,
               bg="#EAA4A4", fg="white",
-              font=("Helvetica", 12, "bold"),
-              width=22, height=2, cursor="hand2").pack(pady=12)
+              font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=25, height=2, cursor="hand2").pack(pady=12)  # CAMBIAR width de 22 a 25
 
     tk.Button(frame_botones, text="📚 Ver Todas las Clases",
               command=ver_clases_instructor,
               bg="#A4C3B2", fg="white",
-              font=("Helvetica", 12, "bold"),
-              width=22, height=2, cursor="hand2").pack(pady=12)
+              font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=25, height=2, cursor="hand2").pack(pady=12)  # CAMBIAR width de 22 a 25
 
     tk.Button(frame_botones, text="✏️ Actualizar Clase",
               command=actualizar_clase,
               bg="#F7D6E0", fg="#2C3E50",
-              font=("Helvetica", 12, "bold"),
-              width=22, height=2, cursor="hand2").pack(pady=12)
+              font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=25, height=2, cursor="hand2").pack(pady=12)  # CAMBIAR width de 22 a 25
 
     tk.Button(frame_botones, text="📋 Registrar Asistencia",
               command=registrar_asistencia,
               bg="#6B9080", fg="white",
-              font=("Helvetica", 12, "bold"),
-              width=22,height=2, cursor="hand2").pack(pady=12)
+              font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=25, height=2, cursor="hand2").pack(pady=12)  # CAMBIAR width de 22 a 25
 
     tk.Button(frame_botones, text="🚪 Cerrar Sesión", command=ventana.destroy,
-              bg="#B0B0B0", fg="white", font=("Helvetica", 11),
-              width=18, cursor="hand2").pack(pady=25)
+              bg="#B0B0B0", fg="white", font=("Helvetica", 13),  # CAMBIAR font de 11 a 13
+              width=22, cursor="hand2").pack(pady=25)
 
 
 #FUNCION PARA AGREGAR UNA CLASE
 def agregar_clase():
     ventana = tk.Toplevel(window)
     ventana.title("Agregar Clase")
-    ventana.geometry("600x550")
+    ventana.geometry("1280x720")
     ventana.resizable(False, False)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
 
     tk.Label(ventana, text="✨ Nueva Clase de Pilates",
-             font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+             font=("Helvetica", 22, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=30)  # CAMBIAR font de 16 a 22, pady de 20 a 30
 
-    tk.Label(ventana, text="Nombre de la clase:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
-    entrada_nombre = tk.Entry(ventana, width=40, font=("Helvetica", 11))
-    entrada_nombre.pack(pady=8)
+    tk.Label(ventana, text="Nombre de la clase:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 14)).pack(pady=10)  # CAMBIAR font de 11 a 14, pady de 8 a 10
+    entrada_nombre = tk.Entry(ventana, width=45, font=("Helvetica", 14))  # CAMBIAR width de 40 a 45, font de 11 a 14
+    entrada_nombre.pack(pady=10)  # CAMBIAR pady de 8 a 10
 
     tk.Label(ventana, text="Selecciona un horario:",
-             bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
+             bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 14)).pack(pady=10)  # CAMBIAR font de 11 a 14, pady de 8 a 10
 
     horarios = database.Horario.listar()
     opciones = [f"{h['dia']} {h['hora_inicio']} - {h['hora_fin']}" for h in horarios]
 
     seleccion_horario = ttk.Combobox(ventana, values=opciones, state="readonly",
-                                     font=("Helvetica", 11), width=45)
-    seleccion_horario.pack(pady=8)
+                                     font=("Helvetica", 14), width=50)  # CAMBIAR font de 11 a 14, width de 45 a 50
+    seleccion_horario.pack(pady=10)  # CAMBIAR pady de 8 a 10
 
-    tk.Label(ventana, text="Cupo máximo:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
-    entrada_cupo = tk.Entry(ventana, width=40, font=("Helvetica", 11))
-    entrada_cupo.pack(pady=8)
+    tk.Label(ventana, text="Cupo máximo:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 14)).pack(pady=10)  # CAMBIAR font de 11 a 14, pady de 8 a 10
+    entrada_cupo = tk.Entry(ventana, width=45, font=("Helvetica", 14))  # CAMBIAR width de 40 a 45, font de 11 a 14
+    entrada_cupo.pack(pady=10)
 
 #FUNCION PARA GUARDAR UNA CLASE
     def guardar_clase():
@@ -212,12 +264,12 @@ def agregar_clase():
         ventana.destroy()
 
     tk.Button(ventana, text="✅ Agregar Clase", command=guardar_clase,
-              bg="#6B9080", fg="white", font=("Helvetica", 12, "bold"),
-              width=18, height=2, cursor="hand2").pack(pady=20)
+              bg="#6B9080", fg="white", font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=20, height=2, cursor="hand2").pack(pady=25)  # CAMBIAR width de 18 a 20, pady de 20 a 25
 
     tk.Button(ventana, text="Cancelar", command=ventana.destroy,
-              bg="#EAA4A4", fg="white", font=("Helvetica", 11),
-              width=18, cursor="hand2").pack()
+              bg="#EAA4A4", fg="white", font=("Helvetica", 13),  # CAMBIAR font de 11 a 13
+              width=20, cursor="hand2").pack()
 
 #FUNCION PARA QUITAR UNA CLASE
 def quitar_clase():
@@ -228,22 +280,22 @@ def quitar_clase():
 
     ventana = tk.Toplevel(window)
     ventana.title("Quitar Clase")
-    ventana.geometry("650x600")
+    ventana.geometry("1280x720")
     ventana.resizable(False, False)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
 
     tk.Label(ventana, text="🗑️ Selecciona la clase a eliminar",
-             font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+             font=("Helvetica", 22, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=30)  # CAMBIAR font de 16 a 22, pady de 20 a 30
 
     frame_lista = tk.Frame(ventana, bg="#F5F0E8")
-    frame_lista.pack(pady=15, padx=25, fill=tk.BOTH, expand=True)
+    frame_lista.pack(pady=20, padx=30, fill=tk.BOTH, expand=True)  # CAMBIAR pady de 15 a 20, padx de 25 a 30
 
     scrollbar = tk.Scrollbar(frame_lista)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
     lista = tk.Listbox(frame_lista, yscrollcommand=scrollbar.set,
-                       font=("Helvetica", 11), height=12)
+                       font=("Helvetica", 13), height=14)  # CAMBIAR font de 11 a 13, height de 12 a 14
     lista.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.config(command=lista.yview)
 
@@ -269,12 +321,12 @@ def quitar_clase():
             ventana.destroy()
 
     tk.Button(ventana, text="🗑️ Eliminar Clase", command=eliminar_seleccionada,
-              bg="#EAA4A4", fg="white", font=("Helvetica", 12, "bold"),
-              width=18, height=2, cursor="hand2").pack(pady=15)
+              bg="#EAA4A4", fg="white", font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=20, height=2, cursor="hand2").pack(pady=20)  # CAMBIAR width de 18 a 20, pady de 15 a 20
 
     tk.Button(ventana, text="Cancelar", command=ventana.destroy,
-              bg="#B0B0B0", fg="white", font=("Helvetica", 11),
-              width=18, cursor="hand2").pack()
+              bg="#B0B0B0", fg="white", font=("Helvetica", 13),  # CAMBIAR font de 11 a 13
+              width=20, cursor="hand2").pack()  # CAMBIAR width de 18 a 20
 
 #FUNCION PARA QUE EL INSTRUCTOR VEA LAS CLASES REGISTRADAS
 def ver_clases_instructor():
@@ -285,22 +337,22 @@ def ver_clases_instructor():
 
     ventana = tk.Toplevel(window)
     ventana.title("Todas las Clases")
-    ventana.geometry("750x600")
+    ventana.geometry("1280x720")
     ventana.resizable(False, False)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
 
     tk.Label(ventana, text="📚 Lista de Clases Registradas",
-             font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+             font=("Helvetica", 22, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=25)  # CAMBIAR font de 16 a 22, pady de 20 a 25
 
     frame_tabla = tk.Frame(ventana, bg="#F5F0E8")
-    frame_tabla.pack(pady=15, padx=25, fill=tk.BOTH, expand=True)
+    frame_tabla.pack(pady=20, padx=30, fill=tk.BOTH, expand=True)  # CAMBIAR pady de 15 a 20, padx de 25 a 30
 
     scrollbar = tk.Scrollbar(frame_tabla)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
     lista = tk.Listbox(frame_tabla, yscrollcommand=scrollbar.set,
-                       font=("Helvetica", 11), height=18, width=80)
+                       font=("Helvetica", 13), height=18, width=85)  # CAMBIAR font de 11 a 13, width de 80 a 85
     lista.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.config(command=lista.yview)
 
@@ -328,17 +380,18 @@ def ver_clases_instructor():
 
         ventana_inscritos = tk.Toplevel(ventana)
         ventana_inscritos.title("Inscritos y Asistencia")
-        ventana_inscritos.geometry("600x500")
+        ventana_inscritos.geometry("800x600")  # CAMBIAR DE "600x500" A "800x600"
         ventana_inscritos.grab_set()
         ventana_inscritos.configure(bg="#F5F0E8")
 
         tk.Label(ventana_inscritos, text=f"Inscritos en '{clase['nombre']}'",
-                 font=("Helvetica", 15, "bold"), bg="#F5F0E8").pack(pady=15)
+                 font=("Helvetica", 18, "bold"), bg="#F5F0E8").pack(pady=20)  # CAMBIAR font de 15 a 18, pady de 15 a 20
 
         frame = tk.Frame(ventana_inscritos, bg="#F5F0E8")
-        frame.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
+        frame.pack(pady=15, padx=25, fill=tk.BOTH, expand=True)  # CAMBIAR pady de 10 a 15, padx de 20 a 25
 
-        texto = tk.Text(frame, font=("Courier", 11), height=20, width=60, bg="#FFFFFF")
+        texto = tk.Text(frame, font=("Courier", 13), height=20, width=65,
+                        bg="#FFFFFF")  # CAMBIAR font de 11 a 13, width de 60 a 65
         texto.pack(fill=tk.BOTH, expand=True)
 
         for usuario in inscritos:
@@ -352,12 +405,12 @@ def ver_clases_instructor():
                   width=18, cursor="hand2").pack(pady=15)
 
     tk.Button(ventana, text="👥 Ver Inscritos y Asistencia", command=mostrar_inscritos,
-              bg="#CCE3DE", fg="#2C3E50", font=("Helvetica", 12, "bold"),
-              width=28, height=2, cursor="hand2").pack(pady=10)
+              bg="#CCE3DE", fg="#2C3E50", font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=30, height=2, cursor="hand2").pack(pady=12)  # CAMBIAR width de 28 a 30, pady de 10 a 12
 
     tk.Button(ventana, text="Cerrar", command=ventana.destroy,
-              bg="#A4C3B2", fg="white", font=("Helvetica", 11),
-              width=18, cursor="hand2").pack(pady=15)
+              bg="#A4C3B2", fg="white", font=("Helvetica", 13),  # CAMBIAR font de 11 a 13
+              width=20, cursor="hand2").pack(pady=20)
 
 def actualizar_clase():
     clases = database.Sesion.listar()
@@ -367,16 +420,16 @@ def actualizar_clase():
 
     ventana = tk.Toplevel(window)
     ventana.title("Actualizar Clase")
-    ventana.geometry("700x600")
+    ventana.geometry("1280x720")
     ventana.resizable(False, False)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
 
     tk.Label(ventana, text="Selecciona la clase a actualizar",
-             font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+             font=("Helvetica", 22, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=25)  # CAMBIAR font de 16 a 22, pady de 20 a 25
 
-    lista = tk.Listbox(ventana, font=("Helvetica", 11), height=10, width=80)
-    lista.pack(pady=10)
+    lista = tk.Listbox(ventana, font=("Helvetica", 13), height=12, width=90)  # CAMBIAR font de 11 a 13, height de 10 a 12, width de 80 a 90
+    lista.pack(pady=15)  # CAMBIAR pady de 10 a 15
 
     for clase in clases:
         texto = f"ID:{clase['id_sesion']} - {clase['nombre']} | {clase['dia']} {clase['hora_inicio']} - {clase['hora_fin']} | Cupo: {clase['cupo']}"
@@ -391,25 +444,29 @@ def actualizar_clase():
 
         ventana_editar = tk.Toplevel(ventana)
         ventana_editar.title("Editar Clase")
-        ventana_editar.geometry("500x400")
+        ventana_editar.geometry("700x500")  # CAMBIAR DE "500x400" A "700x500"
         ventana_editar.grab_set()
         ventana_editar.configure(bg="#F5F0E8")
 
-        tk.Label(ventana_editar, text="Editar Clase", font=("Helvetica", 14, "bold"), bg="#F5F0E8").pack(pady=15)
-        tk.Label(ventana_editar, text="Nombre:", bg="#F5F0E8").pack()
-        entrada_nombre = tk.Entry(ventana_editar, width=40)
+        tk.Label(ventana_editar, text="Editar Clase", font=("Helvetica", 18, "bold"), bg="#F5F0E8").pack(
+            pady=20)  # CAMBIAR font de 14 a 18, pady de 15 a 20
+        tk.Label(ventana_editar, text="Nombre:", bg="#F5F0E8", font=("Helvetica", 13)).pack()  # AGREGAR font 13
+        entrada_nombre = tk.Entry(ventana_editar, width=45,
+                                  font=("Helvetica", 13))  # CAMBIAR width de 40 a 45, AGREGAR font 13
         entrada_nombre.insert(0, clase['nombre'])
-        entrada_nombre.pack(pady=5)
+        entrada_nombre.pack(pady=8)  # CAMBIAR pady de 5 a 8
 
-        tk.Label(ventana_editar, text="Cupo:", bg="#F5F0E8").pack()
-        entrada_cupo = tk.Entry(ventana_editar, width=40)
+        tk.Label(ventana_editar, text="Cupo:", bg="#F5F0E8", font=("Helvetica", 13)).pack()  # AGREGAR font 13
+        entrada_cupo = tk.Entry(ventana_editar, width=45,
+                                font=("Helvetica", 13))  # CAMBIAR width de 40 a 45, AGREGAR font 13
         entrada_cupo.insert(0, clase['cupo'])
-        entrada_cupo.pack(pady=5)
+        entrada_cupo.pack(pady=8)  # CAMBIAR pady de 5 a 8
 
-        tk.Label(ventana_editar, text="Horario:", bg="#F5F0E8").pack()
+        tk.Label(ventana_editar, text="Horario:", bg="#F5F0E8", font=("Helvetica", 13)).pack()  # AGREGAR font 13
         horarios = database.Horario.listar()
         opciones = [f"{h['dia']} {h['hora_inicio']} - {h['hora_fin']}" for h in horarios]
-        seleccion_horario = ttk.Combobox(ventana_editar, values=opciones, state="readonly", width=37)
+        seleccion_horario = ttk.Combobox(ventana_editar, values=opciones, state="readonly", width=42,
+                                         font=("Helvetica", 13))  # CAMBIAR width de 37 a 42, AGREGAR font 13
         for idx, h in enumerate(horarios):
             if h['dia'] == clase['dia'] and h['hora_inicio'] == clase['hora_inicio'] and h['hora_fin'] == clase['hora_fin']:
                 seleccion_horario.current(idx)
@@ -439,20 +496,20 @@ def actualizar_clase():
             ventana.destroy()
 
         tk.Button(ventana_editar, text="Guardar Cambios", command=guardar_cambios,
-                  bg="#6B9080", fg="white", font=("Helvetica", 11, "bold"),
-                  width=18, height=2, cursor="hand2").pack(pady=20)
+                  bg="#6B9080", fg="white", font=("Helvetica", 13, "bold"),  # CAMBIAR font de 11 a 13
+                  width=20, height=2, cursor="hand2").pack(pady=25)  # CAMBIAR width de 18 a 20, pady de 20 a 25
 
         tk.Button(ventana_editar, text="Cancelar", command=ventana.destroy,
-                  bg="#B0B0B0", fg="white", font=("Helvetica", 11),
-                  width=18, cursor="hand2").pack()
+                  bg="#B0B0B0", fg="white", font=("Helvetica", 13),  # CAMBIAR font de 11 a 13
+                  width=20, cursor="hand2").pack()  # CAMBIAR width de 18 a 20
 
     tk.Button(ventana, text="Editar Clase Seleccionada", command=editar,
-              bg="#F7D6E0", fg="#2C3E50", font=("Helvetica", 12, "bold"),
-              width=22, height=2, cursor="hand2").pack(pady=15)
+              bg="#F7D6E0", fg="#2C3E50", font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=25, height=2, cursor="hand2").pack(pady=20)  # CAMBIAR width de 22 a 25, pady de 15 a 20
 
     tk.Button(ventana, text="Cancelar", command=ventana.destroy,
-              bg="#B0B0B0", fg="white", font=("Helvetica", 11),
-              width=18, cursor="hand2").pack()
+              bg="#B0B0B0", fg="white", font=("Helvetica", 13),  # CAMBIAR font de 11 a 13
+              width=20, cursor="hand2").pack()  # CAMBIAR width de 18 a 20
 
 from datetime import date
 
@@ -464,17 +521,17 @@ def registrar_asistencia():
 
     ventana = tk.Toplevel(window)
     ventana.title("Registrar Asistencia")
-    ventana.geometry("650x600")
+    ventana.geometry("1280x720")
     ventana.configure(bg="#F5F0E8")
     ventana.grab_set()
 
-    tk.Label(ventana, text="Selecciona la clase:", bg="#F5F0E8").pack(pady=10)
+    tk.Label(ventana, text="Selecciona la clase:", bg="#F5F0E8", font=("Helvetica", 16)).pack(pady=15)  # CAMBIAR font AGREGAR 16, pady de 10 a 15
     nombres_clases = [f"{s['nombre']} | {s['dia']} {s['hora_inicio']}-{s['hora_fin']} " for s in sesiones]
-    combo_clase = ttk.Combobox(ventana, values=nombres_clases, state="readonly", width=40)
-    combo_clase.pack(pady=5)
+    combo_clase = ttk.Combobox(ventana, values=nombres_clases, state="readonly", width=50, font=("Helvetica", 14))  # CAMBIAR width de 40 a 50, AGREGAR font 14
+    combo_clase.pack(pady=10)  # CAMBIAR pady de 5 a 10
 
-    lista_usuarios = tk.Listbox(ventana, selectmode=tk.MULTIPLE, width=50)
-    lista_usuarios.pack(pady=15)
+    lista_usuarios = tk.Listbox(ventana, selectmode=tk.MULTIPLE, width=60, font=("Helvetica", 13), height=15)  # CAMBIAR width de 50 a 60, AGREGAR font 13, AGREGAR height 15
+    lista_usuarios.pack(pady=20)  # CAMBIAR pady de 15 a 20
 
     def cargar_usuarios(event=None):
         lista_usuarios.delete(0, tk.END)
@@ -508,60 +565,61 @@ def registrar_asistencia():
         ventana.destroy()
 
     tk.Button(ventana, text="Registrar Asistencia", command=guardar_asistencia,
-              bg="#6B9080", fg="white", font=("Helvetica", 12, "bold"),
-              width=20, height=2, cursor="hand2").pack(pady=10)
+              bg="#6B9080", fg="white", font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=22, height=2, cursor="hand2").pack(pady=15)  # CAMBIAR width de 20 a 22, pady de 10 a 15
 
     tk.Button(ventana, text="Cancelar", command=ventana.destroy,
-              bg="#EAA4A4", fg="white", font=("Helvetica", 11),
-              width=18, cursor="hand2").pack()
+              bg="#EAA4A4", fg="white", font=("Helvetica", 13),  # CAMBIAR font de 11 a 13
+              width=20, cursor="hand2").pack()  # CAMBIAR width de 18 a 20
 
 
 #VENTANA COMO CLIENTE
 def panel_cliente(nombre_cliente, telefono_cliente=""):
     ventana = tk.Toplevel(window)
     ventana.title("Panel de Cliente")
-    ventana.geometry("650x600")
+    ventana.geometry("1280x720")
     ventana.resizable(False, False)
     ventana.transient(window)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
 
     tk.Label(ventana, text=f"👋 Bienvenido, {nombre_cliente}",
-             font=("Helvetica", 18, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=30)
+             font=("Helvetica", 24, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=40)  # CAMBIAR font de 18 a 24, pady de 30 a 40
 
     tk.Label(ventana, text="¿Qué deseas hacer?",
-             font=("Helvetica", 13), bg="#F5F0E8", fg="#6B9080").pack(pady=15)
+             font=("Helvetica", 16), bg="#F5F0E8", fg="#6B9080").pack(pady=20)  # CAMBIAR font de 13 a 16, pady de 15 a 20
 
     frame_botones = tk.Frame(ventana, bg="#F5F0E8")
-    frame_botones.pack(pady=25)
+    frame_botones.pack(pady=30)  # CAMBIAR pady de 25 a 30
 
     tk.Button(frame_botones, text="📅 Ver Horarios Disponibles",
               command=lambda: ver_horarios_disponibles(nombre_cliente),
               bg="#A4C3B2", fg="white",
-              font=("Helvetica", 12, "bold"),
-              width=26, height=2, cursor="hand2").pack(pady=12)
+              font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=28, height=2, cursor="hand2").pack(pady=12)  # CAMBIAR width de 26 a 28
 
     tk.Button(frame_botones, text="✅ Asignarse a una Clase",
               command=lambda: asignarse_clase(nombre_cliente, telefono_cliente),
               bg="#6B9080", fg="white",
-              font=("Helvetica", 12, "bold"),
-              width=26, height=2, cursor="hand2").pack(pady=12)
+              font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=28, height=2, cursor="hand2").pack(pady=12)  # CAMBIAR width de 26 a 28
 
     tk.Button(frame_botones, text="❌ Salirse de una Clase",
               command=lambda: salirse_clase(nombre_cliente, telefono_cliente),
               bg="#EAA4A4", fg="white",
-              font=("Helvetica", 12, "bold"),
-              width=26, height=2, cursor="hand2").pack(pady=12)
+              font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=28, height=2, cursor="hand2").pack(pady=12)  # CAMBIAR width de 26 a 28
 
     tk.Button(frame_botones, text="📝 Mis Clases Inscritas",
               command=lambda: ver_mis_clases(nombre_cliente, telefono_cliente),
               bg="#CCE3DE", fg="#2C3E50",
-              font=("Helvetica", 12, "bold"),
-              width=26, height=2, cursor="hand2").pack(pady=12)
+              font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=28, height=2, cursor="hand2").pack(pady=12)  # CAMBIAR width de 26 a 28
 
     tk.Button(ventana, text="🚪 Cerrar Sesión", command=ventana.destroy,
-              bg="#B0B0B0", fg="white", font=("Helvetica", 11),
-              width=18, cursor="hand2").pack(pady=20)
+              bg="#B0B0B0", fg="white", font=("Helvetica", 13),  # CAMBIAR font de 11 a 13
+              width=20, cursor="hand2").pack(pady=25)
+
 
 #FUNCION PARA VER LOS HORARIOS DISPONIBLES
 def ver_horarios_disponibles(nombre_cliente):
@@ -572,22 +630,22 @@ def ver_horarios_disponibles(nombre_cliente):
 
     ventana = tk.Toplevel(window)
     ventana.title("Horarios Disponibles")
-    ventana.geometry("750x550")
+    ventana.geometry("1280x720")
     ventana.resizable(False, False)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
 
     tk.Label(ventana, text="📅 Horarios de Clases Disponibles",
-             font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+             font=("Helvetica", 22, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=25)  # CAMBIAR font de 16 a 22, pady de 20 a 25
 
     frame_tabla = tk.Frame(ventana, bg="#F5F0E8")
-    frame_tabla.pack(pady=15, padx=25, fill=tk.BOTH, expand=True)
+    frame_tabla.pack(pady=20, padx=30, fill=tk.BOTH, expand=True)  # CAMBIAR pady de 15 a 20, padx de 25 a 30
 
     scrollbar = tk.Scrollbar(frame_tabla)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
     texto = tk.Text(frame_tabla, yscrollcommand=scrollbar.set,
-                    font=("Courier", 11), height=18, width=80, bg="#FFFFFF")
+                    font=("Courier", 13), height=18, width=85, bg="#FFFFFF")  # CAMBIAR font de 11 a 13, width de 80 a 85
     texto.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.config(command=texto.yview)
 
@@ -602,8 +660,8 @@ def ver_horarios_disponibles(nombre_cliente):
     texto.config(state=tk.DISABLED)
 
     tk.Button(ventana, text="Cerrar", command=ventana.destroy,
-              bg="#A4C3B2", fg="white", font=("Helvetica", 11),
-              width=18, cursor="hand2").pack(pady=15)
+              bg="#A4C3B2", fg="white", font=("Helvetica", 13),  # CAMBIAR font de 11 a 13
+              width=20, cursor="hand2").pack(pady=20)
 
 #FUNCION PARA SALIR DE LA CLASE
 def asignarse_clase(nombre_cliente, telefono_cliente):
@@ -627,22 +685,23 @@ def asignarse_clase(nombre_cliente, telefono_cliente):
 
     ventana = tk.Toplevel(window)
     ventana.title("Asignarse a Clase")
-    ventana.geometry("700x500")
+    ventana.geometry("1280x720")
     ventana.resizable(False, False)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
 
     tk.Label(ventana, text="✅ Selecciona una clase para inscribirte",
-             font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+             font=("Helvetica", 22, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(
+        pady=30)  # CAMBIAR font de 16 a 22, pady de 20 a 30
 
     frame_lista = tk.Frame(ventana, bg="#F5F0E8")
-    frame_lista.pack(pady=15, padx=25, fill=tk.BOTH, expand=True)
+    frame_lista.pack(pady=20, padx=30, fill=tk.BOTH, expand=True)  # CAMBIAR pady de 15 a 20, padx de 25 a 30
 
     scrollbar = tk.Scrollbar(frame_lista)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
     lista = tk.Listbox(frame_lista, yscrollcommand=scrollbar.set,
-                       font=("Helvetica", 11), height=12)
+                       font=("Helvetica", 13), height=14)  # CAMBIAR font de 11 a 13, height de 12 a 14
     lista.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.config(command=lista.yview)
 
@@ -664,12 +723,12 @@ def asignarse_clase(nombre_cliente, telefono_cliente):
         ventana.destroy()
 
     tk.Button(ventana, text="✅ Inscribirme", command=inscribirse,
-              bg="#6B9080", fg="white", font=("Helvetica", 12, "bold"),
-              width=18, height=2, cursor="hand2").pack(pady=15)
+              bg="#6B9080", fg="white", font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=20, height=2, cursor="hand2").pack(pady=20)  # CAMBIAR width de 18 a 20, pady de 15 a 20
 
     tk.Button(ventana, text="Cancelar", command=ventana.destroy,
-              bg="#B0B0B0", fg="white", font=("Helvetica", 11),
-              width=18, cursor="hand2").pack()
+              bg="#B0B0B0", fg="white", font=("Helvetica", 13),  # CAMBIAR font de 11 a 13
+              width=20, cursor="hand2").pack()  # CAMBIAR width de 18 a 20
 
 #FUNCION PARA SALIR DE UNA CLASE
 def salirse_clase(nombre_cliente, telefono_cliente):
@@ -681,27 +740,27 @@ def salirse_clase(nombre_cliente, telefono_cliente):
     if not clases:
         messagebox.showinfo("Información", "No estás inscrito en ninguna clase")
         return
+        ventana = tk.Toplevel(window)
+        ventana.title("Salirse de Clase")
+        ventana.geometry("1280x720")
+        ventana.resizable(False, False)
+        ventana.grab_set()
+        ventana.configure(bg="#F5F0E8")
 
-    ventana = tk.Toplevel(window)
-    ventana.title("Salirse de Clase")
-    ventana.geometry("700x500")
-    ventana.resizable(False, False)
-    ventana.grab_set()
-    ventana.configure(bg="#F5F0E8")
+        tk.Label(ventana, text="❌ Selecciona la clase de la que deseas salir",
+                 font=("Helvetica", 22, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(
+            pady=30)  # CAMBIAR font de 16 a 22, pady de 20 a 30
 
-    tk.Label(ventana, text="❌ Selecciona la clase de la que deseas salir",
-             font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+        frame_lista = tk.Frame(ventana, bg="#F5F0E8")
+        frame_lista.pack(pady=20, padx=30, fill=tk.BOTH, expand=True)  # CAMBIAR pady de 15 a 20, padx de 25 a 30
 
-    frame_lista = tk.Frame(ventana, bg="#F5F0E8")
-    frame_lista.pack(pady=15, padx=25, fill=tk.BOTH, expand=True)
+        scrollbar = tk.Scrollbar(frame_lista)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    scrollbar = tk.Scrollbar(frame_lista)
-    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-    lista = tk.Listbox(frame_lista, yscrollcommand=scrollbar.set,
-                       font=("Helvetica", 11), height=12)
-    lista.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-    scrollbar.config(command=lista.yview)
+        lista = tk.Listbox(frame_lista, yscrollcommand=scrollbar.set,
+                           font=("Helvetica", 13), height=14)  # CAMBIAR font de 11 a 13, height de 12 a 14
+        lista.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.config(command=lista.yview)
 
     for clase in clases:
         texto = f"{clase['nombre']} | {clase['dia']} {clase['hora_inicio']} - {clase['hora_fin']}"
@@ -723,12 +782,12 @@ def salirse_clase(nombre_cliente, telefono_cliente):
             ventana.destroy()
 
     tk.Button(ventana, text="❌ Salir de Clase", command=desinscribirse,
-              bg="#EAA4A4", fg="white", font=("Helvetica", 12, "bold"),
-              width=18, height=2, cursor="hand2").pack(pady=15)
+              bg="#EAA4A4", fg="white", font=("Helvetica", 14, "bold"),  # CAMBIAR font de 12 a 14
+              width=20, height=2, cursor="hand2").pack(pady=20)
 
     tk.Button(ventana, text="Cancelar", command=ventana.destroy,
-              bg="#B0B0B0", fg="white", font=("Helvetica", 11),
-              width=18, cursor="hand2").pack()
+              bg="#B0B0B0", fg="white", font=("Helvetica", 13),  # CAMBIAR font de 11 a 13
+              width=20, cursor="hand2").pack()
 
 # FUNCION PARA VER MIS CLASES ASIGNADAS
 def ver_mis_clases(nombre_cliente, telefono_cliente):
@@ -743,22 +802,22 @@ def ver_mis_clases(nombre_cliente, telefono_cliente):
 
     ventana = tk.Toplevel(window)
     ventana.title("Mis Clases")
-    ventana.geometry("700x500")
+    ventana.geometry("1280x720")
     ventana.resizable(False, False)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
 
     tk.Label(ventana, text="📝 Mis Clases Inscritas",
-             font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=20)
+             font=("Helvetica", 22, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=30)  # CAMBIAR font de 16 a 22, pady de 20 a 30
 
     frame_tabla = tk.Frame(ventana, bg="#F5F0E8")
-    frame_tabla.pack(pady=15, padx=25, fill=tk.BOTH, expand=True)
+    frame_tabla.pack(pady=20, padx=30, fill=tk.BOTH, expand=True)  # CAMBIAR pady de 15 a 20, padx de 25 a 30
 
     scrollbar = tk.Scrollbar(frame_tabla)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
     texto = tk.Text(frame_tabla, yscrollcommand=scrollbar.set,
-                    font=("Courier", 11), height=15, width=70, bg="#FFFFFF")
+                    font=("Courier", 13), height=16, width=75, bg="#FFFFFF")  # CAMBIAR font de 11 a 13, height de 15 a 16, width de 70 a 75
     texto.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.config(command=texto.yview)
 
@@ -773,29 +832,34 @@ def ver_mis_clases(nombre_cliente, telefono_cliente):
     texto.config(state=tk.DISABLED)
 
     tk.Button(ventana, text="Cerrar", command=ventana.destroy,
-              bg="#CCE3DE", fg="#2C3E50", font=("Helvetica", 11),
-              width=18, cursor="hand2").pack(pady=15)
+              bg="#CCE3DE", fg="#2C3E50", font=("Helvetica", 13),  # CAMBIAR font de 11 a 13
+              width=20, cursor="hand2").pack(pady=20)  # CAMBIAR width de 18 a 20, pady de 15 a 20
 
 # VENTANA DE REGISTRARSE
 def ventana_registrarse():
     ventana = tk.Toplevel(window)
     ventana.title("Registrarse")
-    ventana.geometry("550x400")
+    ventana.geometry("1920x1080")  # CAMBIAR DE "550x400" A "1920x1080"
     ventana.resizable(False, False)
     ventana.transient(window)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
+    agregar_fondo(ventana, 'sala_inicio_sesion.png')
+    agregar_overlay(ventana, color="#F5F0E8", alpha=150)  # AGREGAR ESTA LÍNEA
 
     tk.Label(ventana, text="📝 Registro de Cliente",
-             font=("Helvetica", 16, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(pady=25)
+             font=("Helvetica", 32, "bold"), bg="#F5F0E8", fg="#2C3E50").pack(
+        pady=80)  # CAMBIAR font de 16 a 32, pady de 25 a 80
 
-    tk.Label(ventana, text="Nombre completo:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
-    entrada_nombre = tk.Entry(ventana, width=40, font=("Helvetica", 11))
-    entrada_nombre.pack(pady=8)
+    tk.Label(ventana, text="Nombre completo:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 20)).pack(
+        pady=15)  # CAMBIAR font de 11 a 20, pady de 8 a 15
+    entrada_nombre = tk.Entry(ventana, width=50, font=("Helvetica", 18))  # CAMBIAR width de 40 a 50, font de 11 a 18
+    entrada_nombre.pack(pady=15)  # CAMBIAR pady de 8 a 15
 
-    tk.Label(ventana, text="Número de celular:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 11)).pack(pady=8)
-    entrada_celular = tk.Entry(ventana, width=40, font=("Helvetica", 11))
-    entrada_celular.pack(pady=8)
+    tk.Label(ventana, text="Número de celular:", bg="#F5F0E8", fg="#2C3E50", font=("Helvetica", 20)).pack(
+        pady=15)  # CAMBIAR font de 11 a 20, pady de 8 a 15
+    entrada_celular = tk.Entry(ventana, width=50, font=("Helvetica", 18))  # CAMBIAR width de 40 a 50, font de 11 a 18
+    entrada_celular.pack(pady=15)
 # GUARDAR USUARIO
     def guardar_cliente():
         nombre = entrada_nombre.get().strip()
@@ -825,13 +889,13 @@ def ventana_registrarse():
             messagebox.showerror("Error", "No se pudo obtener el código del usuario.")
 
     btn_registrar = tk.Button(ventana, text="✅ Registrar", command=guardar_cliente,
-                              bg="#6B9080", fg="white", font=("Helvetica", 12, "bold"),
-                              width=18, height=2, cursor="hand2")
-    btn_registrar.pack(pady=25)
+                              bg="#6B9080", fg="white", font=("Helvetica", 18, "bold"),  # CAMBIAR font de 12 a 18
+                              width=22, height=3, cursor="hand2")  # CAMBIAR width de 18 a 22, height de 2 a 3
+    btn_registrar.pack(pady=50)  # CAMBIAR pady de 25 a 50
 
     tk.Button(ventana, text="Cancelar", command=ventana.destroy,
-              bg="#EAA4A4", fg="white", font=("Helvetica", 11),
-              width=18, cursor="hand2").pack()
+              bg="#EAA4A4", fg="white", font=("Helvetica", 16),  # CAMBIAR font de 11 a 16
+              width=22, height=2, cursor="hand2").pack()
 
 
 # Ventana principal
@@ -840,7 +904,7 @@ window.title("DAC PILATES 🧘‍♀️")
 window.geometry("1920x1080")
 window.state('zoomed')
 window.configure(bg="#F5F0E8")
-
+agregar_fondo(window, 'sala_inicio_sesion.png')
 frame_principal = tk.Frame(window, bg="#F5F0E8")
 frame_principal.pack(fill=tk.BOTH, expand=True)
 
