@@ -106,7 +106,7 @@ def ventana_iniciar_sesion():
     tk.Button(ventana, text="¿Olvidaste tu código?",
               command=ventana_recuperar_codigo,
               bg="#9E9E9E", fg="white", font=("Helvetica", 13, "bold"),
-              width=20, height=2, cursor="hand2").pack()
+              width=20, height=2, cursor="hand2").pack(pady=15)
 
 
 #PUNTO DE VISTA PARA EL INSTRUCTOR
@@ -160,7 +160,7 @@ def panel_instructor():
 
     tk.Button(frame_botones, text="🚪 Cerrar Sesión", command=ventana.destroy,
               bg="#B0B0B0", fg="white", font=("Helvetica", 13),
-              width=22, cursor="hand2").pack(pady=25)
+              width=22, cursor="hand2").pack(pady=10)
 
 
 #FUNCION PARA AGREGAR UNA CLASE

@@ -226,7 +226,6 @@ class Inscripcion:
 
     @staticmethod
     def listar_por_sesion(id_sesion):
-        import sqlite3
         with sqlite3.connect(DB_NAME) as conn:
             conn.row_factory = sqlite3.Row
             cur = conn.execute("""
