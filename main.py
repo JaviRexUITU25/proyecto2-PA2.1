@@ -285,7 +285,7 @@ def ver_clases_instructor():
 
     ventana = tk.Toplevel(window)
     ventana.title("Todas las Clases")
-    ventana.geometry("750x550")
+    ventana.geometry("750x600")
     ventana.resizable(False, False)
     ventana.grab_set()
     ventana.configure(bg="#F5F0E8")
@@ -299,21 +299,58 @@ def ver_clases_instructor():
     scrollbar = tk.Scrollbar(frame_tabla)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    texto = tk.Text(frame_tabla, yscrollcommand=scrollbar.set,
-                    font=("Courier", 11), height=18, width=80, bg="#FFFFFF")
-    texto.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-    scrollbar.config(command=texto.yview)
+    lista = tk.Listbox(frame_tabla, yscrollcommand=scrollbar.set,
+                       font=("Helvetica", 11), height=18, width=80)
+    lista.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar.config(command=lista.yview)
 
     for clase in clases:
-        info = f"{'=' * 60}\n"
-        info += f"ID: {clase['id_sesion']}\n"
-        info += f"Nombre: {clase['nombre']}\n"
-        info += f"Día: {clase['dia']} | Hora:{clase['hora_inicio']} - {clase['hora_fin']}\n"
-        info += f"Cupo: {clase['cupo']}\n"
-        info += f"{'=' * 60}\n\n"
-        texto.insert(tk.END, info)
+        texto = f"Nombre:{clase['nombre']} | {clase['dia']} {clase['hora_inicio']} - {clase['hora_fin']} | Cupo: {clase['cupo']}"
+        lista.insert(tk.END, texto)
 
-    texto.config(state=tk.DISABLED)
+    def mostrar_inscritos():
+        seleccion = lista.curselection()
+        if not seleccion:
+            messagebox.showwarning("Advertencia", "Selecciona una clase")
+            return
+        clase = clases[seleccion[0]]
+        id_sesion = clase['id_sesion']
+
+        # Traer inscritos y asistencias
+        inscritos = database.Inscripcion.listar_por_sesion(id_sesion)
+        asistencias = database.Asistencia.listar_por_sesion(id_sesion)
+
+        # Crear un set de id_usuario que asistieron (puedes filtrar por fecha si lo deseas)
+        presentes = set(a['id_usuario'] for a in asistencias if a['presente'])
+
+        ventana_inscritos = tk.Toplevel(ventana)
+        ventana_inscritos.title("Inscritos y Asistencia")
+        ventana_inscritos.geometry("600x500")
+        ventana_inscritos.grab_set()
+        ventana_inscritos.configure(bg="#F5F0E8")
+
+        tk.Label(ventana_inscritos, text=f"Inscritos en '{clase['nombre']}'",
+                 font=("Helvetica", 15, "bold"), bg="#F5F0E8").pack(pady=15)
+
+        frame = tk.Frame(ventana_inscritos, bg="#F5F0E8")
+        frame.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
+
+        texto = tk.Text(frame, font=("Courier", 11), height=20, width=60, bg="#FFFFFF")
+        texto.pack(fill=tk.BOTH, expand=True)
+
+        for usuario in inscritos:
+            estado = "✅ Presente" if usuario['id_usuario'] in presentes else "❌ Ausente"
+            texto.insert(tk.END, f"{usuario['nombre']} ({usuario['telefono']}) - {estado}\n")
+
+        texto.config(state=tk.DISABLED)
+
+        tk.Button(ventana_inscritos, text="Cerrar", command=ventana_inscritos.destroy,
+                  bg="#A4C3B2", fg="white", font=("Helvetica", 11),
+                  width=18, cursor="hand2").pack(pady=15)
+
+    tk.Button(ventana, text="👥 Ver Inscritos y Asistencia", command=mostrar_inscritos,
+              bg="#CCE3DE", fg="#2C3E50", font=("Helvetica", 12, "bold"),
+              width=28, height=2, cursor="hand2").pack(pady=10)
 
     tk.Button(ventana, text="Cerrar", command=ventana.destroy,
               bg="#A4C3B2", fg="white", font=("Helvetica", 11),
