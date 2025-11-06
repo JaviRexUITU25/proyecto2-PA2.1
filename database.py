@@ -187,7 +187,11 @@ class Inscripcion:
                 )
                 conn.commit()
                 Sesion.disminuir_cupo(self.id_sesion)
-        print("Inscripción registrada con exito")
+                print("Inscripción registrada con exito")
+                return "inscrito"
+            else:
+                return "sin_cupo"
+
 
     @staticmethod
     def listar_por_usuario(id_usuario):

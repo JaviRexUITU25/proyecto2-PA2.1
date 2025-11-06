@@ -318,6 +318,10 @@ def ver_clases_instructor():
 
         # Traer inscritos y asistencias
         inscritos = database.Inscripcion.listar_por_sesion(id_sesion)
+        if not inscritos:
+            messagebox.showinfo("Información",
+                                f"No hay clientes inscritos en la clase '{clase['nombre']}'.")
+            return
         asistencias = database.Asistencia.listar_por_sesion(id_sesion)
 
         # Crear un set de id_usuario que asistieron (puedes filtrar por fecha si lo deseas)
@@ -466,7 +470,7 @@ def registrar_asistencia():
     ventana.grab_set()
 
     tk.Label(ventana, text="Selecciona la clase:", bg="#F5F0E8").pack(pady=10)
-    nombres_clases = [f"{s['nombre']} | {s['dia']} {s['hora_inicio']}-{s['hora_fin']} | {s['cupo']}" for s in sesiones]
+    nombres_clases = [f"{s['nombre']} | {s['dia']} {s['hora_inicio']}-{s['hora_fin']} " for s in sesiones]
     combo_clase = ttk.Combobox(ventana, values=nombres_clases, state="readonly", width=40)
     combo_clase.pack(pady=5)
 
